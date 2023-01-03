@@ -1,20 +1,19 @@
 ﻿using FluentMigrator;
-using FluentMigrator.Infrastructure;
 using Nop.Data.Migrations;
 
-namespace Nop.Plugin.Sic.Sxc.Data
+namespace Nop.Plugin.ToSic.Sxc.Data
 {
     [NopMigration("2022/02/03 09:27:23:6455432", "Sic.Sxc base schema", MigrationProcessType.Installation)]
     public class SchemaMigration : AutoReversingMigration
     {
         public override void Up()
         {
-            Create.Table("EntityTypes")
+            Create.Table("EntityType")
               .WithColumn("EntityTypeId").AsInt64().PrimaryKey().Identity()
               .WithColumn("Name").AsString(255).NotNullable()
               .WithColumn("Description").AsString(int.MaxValue).Nullable();
 
-            Create.Table("Attributes")
+            Create.Table("Attribute")
                    .WithColumn("AttributeId").AsInt64().PrimaryKey().Identity()
                    .WithColumn("EntityTypeId").AsInt64().NotNullable()
                    .WithColumn("Name").AsString(255).NotNullable()
@@ -23,20 +22,20 @@ namespace Nop.Plugin.Sic.Sxc.Data
                    .WithColumn("Required").AsBoolean().NotNullable().WithDefaultValue(false)
                    .WithColumn("IsSearchable").AsBoolean().NotNullable().WithDefaultValue(false);
 
-            Create.Table("AttributeSets")
+            Create.Table("AttributeSet")
               .WithColumn("AttributeSetId").AsInt64().PrimaryKey().Identity()
               .WithColumn("EntityTypeId").AsInt64().NotNullable()
               .WithColumn("Name").AsString(255).NotNullable()
               .WithColumn("Description").AsString(int.MaxValue).Nullable();
 
-            Create.Table("AttributeValues")
+            Create.Table("AttributeValue")
               .WithColumn("AttributeValueId").AsInt64().PrimaryKey().Identity()
               .WithColumn("EntityId").AsInt64().NotNullable()
               .WithColumn("AttributeId").AsInt64().NotNullable()
               .WithColumn("Value").AsString(int.MaxValue).Nullable()
               .WithColumn("SortOrder").AsInt32().NotNullable().WithDefaultValue(0);
 
-            Create.Table("Entities")
+            Create.Table("Entity")
                .WithColumn("EntityId").AsInt64().PrimaryKey().Identity()
                .WithColumn("EntityTypeId").AsInt64().NotNullable()
                .WithColumn("ParentId").AsInt64().Nullable()
@@ -50,7 +49,7 @@ namespace Nop.Plugin.Sic.Sxc.Data
                .WithColumn("ModifiedOn").AsDateTime().Nullable()
                .WithColumn("ModifiedBy").AsString(255).Nullable();
 
-            Create.Table("Relationships")
+            Create.Table("Relationship")
               .WithColumn("RelationshipId").AsInt64().PrimaryKey().Identity()
               .WithColumn("EntityId1").AsInt64().NotNullable()
               .WithColumn("EntityId2").AsInt64().NotNullable()
@@ -58,37 +57,37 @@ namespace Nop.Plugin.Sic.Sxc.Data
               .WithColumn("SortOrder").AsInt32().NotNullable().WithDefaultValue(0);
 
 
-            Create.ForeignKey("FK_Entities_EntityTypes")
-               .FromTable("Entities").ForeignColumn("EntityTypeId")
-               .ToTable("EntityTypes").PrimaryColumn("EntityTypeId");
+            Create.ForeignKey("FK_Entity_EntityType")
+               .FromTable("Entity").ForeignColumn("EntityTypeId")
+               .ToTable("EntityType").PrimaryColumn("EntityTypeId");
 
-            Create.ForeignKey("FK_Entities_Entities")
-               .FromTable("Entities").ForeignColumn("ParentId")
-               .ToTable("Entities").PrimaryColumn("EntityId");
+            Create.ForeignKey("FK_Entity_Entity")
+               .FromTable("Entity").ForeignColumn("ParentId")
+               .ToTable("Entity").PrimaryColumn("EntityId");
 
-            Create.ForeignKey("FK_AttributeValues_Entities")
-               .FromTable("AttributeValues").ForeignColumn("EntityId")
-               .ToTable("Entities").PrimaryColumn("EntityId");
+            Create.ForeignKey("FK_AttributeValue_Entity")
+               .FromTable("AttributeValue").ForeignColumn("EntityId")
+               .ToTable("Entity").PrimaryColumn("EntityId");
 
-            Create.ForeignKey("FK_AttributeValues_Attributes")
-               .FromTable("AttributeValues").ForeignColumn("AttributeId")
-               .ToTable("Attributes").PrimaryColumn("AttributeId");
+            Create.ForeignKey("FK_AttributeValues_Attribute")
+               .FromTable("AttributeValue").ForeignColumn("AttributeId")
+               .ToTable("Attribute").PrimaryColumn("AttributeId");
 
-            Create.ForeignKey("FK_AttributeSets_EntityTypes")
-               .FromTable("AttributeSets").ForeignColumn("EntityTypeId")
-               .ToTable("EntityTypes").PrimaryColumn("EntityTypeId");
+            Create.ForeignKey("FK_AttributeSet_EntityType")
+               .FromTable("AttributeSet").ForeignColumn("EntityTypeId")
+               .ToTable("EntityType").PrimaryColumn("EntityTypeId");
 
-            Create.ForeignKey("FK_Attributes_EntityTypes")
-               .FromTable("Attributes").ForeignColumn("EntityTypeId")
-               .ToTable("EntityTypes").PrimaryColumn("EntityTypeId");
+            Create.ForeignKey("FK_Attribute_EntityType")
+               .FromTable("Attribute").ForeignColumn("EntityTypeId")
+               .ToTable("EntityType").PrimaryColumn("EntityTypeId");
 
-            Create.ForeignKey("FK_Relationships_Entities1")
-              .FromTable("Relationships").ForeignColumn("EntityId1")
-              .ToTable("Entities").PrimaryColumn("EntityId");
+            Create.ForeignKey("FK_Relationship_Entity1")
+              .FromTable("Relationship").ForeignColumn("EntityId1")
+              .ToTable("Entity").PrimaryColumn("EntityId");
 
-            Create.ForeignKey("FK_Relationships_Entities2")
-               .FromTable("Relationships").ForeignColumn("EntityId2")
-               .ToTable("Entities").PrimaryColumn("EntityId");
+            Create.ForeignKey("FK_Relationship_Entity2")
+               .FromTable("Relationship").ForeignColumn("EntityId2")
+               .ToTable("Entity").PrimaryColumn("EntityId");
         }
     }
 }

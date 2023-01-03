@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Nop.Services.Plugins;
 
-namespace Nop.Plugin.Sic.Sxc
+namespace Nop.Plugin.ToSic.Sxc
 {
     public class SxciPlugin : BasePlugin
     {

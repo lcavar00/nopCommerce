@@ -8,7 +8,7 @@
     <PackageProjectUrl>https://www.nopcommerce.com/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/lcavar00/nopCommerce</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
-    <OutputPath>..\..\Presentation\Nop.Web\Plugins\2sic.2sxc</OutputPath>
+    <OutputPath>..\..\Presentation\Nop.Web\Plugins\ToSic.Sxc</OutputPath>
     <OutDir>$(OutputPath)</OutDir>
 
     <!--Set this parameter to true to get the dlls copied from the NuGet cache to the output of your project.
