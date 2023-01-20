@@ -4,9 +4,11 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Nop.Core;
 using Nop.Core.Caching;
 using Nop.Core.Configuration;
+using Nop.Core.Domain.Media;
 using Nop.Core.Events;
 using Nop.Core.Infrastructure;
 using Nop.Data;
@@ -15,6 +17,7 @@ using Nop.Services.Authentication;
 using Nop.Services.Authentication.External;
 using Nop.Services.Authentication.MultiFactor;
 using Nop.Services.Blogs;
+using Nop.Services.Caching;
 using Nop.Services.Catalog;
 using Nop.Services.Cms;
 using Nop.Services.Common;
@@ -85,10 +88,24 @@ namespace Nop.Web.Framework.Infrastructure
 
             //static cache manager
             var appSettings = Singleton<AppSettings>.Instance;
-            if (appSettings.Get<DistributedCacheConfig>().Enabled)
+            var distributedCacheConfig = appSettings.Get<DistributedCacheConfig>();
+            if (distributedCacheConfig.Enabled)
             {
-                services.AddScoped<ILocker, DistributedCacheManager>();
-                services.AddScoped<IStaticCacheManager, DistributedCacheManager>();
+                switch (distributedCacheConfig.DistributedCacheType)
+                {
+                    case DistributedCacheType.Memory:
+                        services.AddScoped<ILocker, MemoryDistributedCacheManager>();
+                        services.AddScoped<IStaticCacheManager, MemoryDistributedCacheManager>();
+                        break;
+                    case DistributedCacheType.SqlServer:
+                        services.AddScoped<ILocker, MsSqlServerCacheManager>();
+                        services.AddScoped<IStaticCacheManager, MsSqlServerCacheManager>();
+                        break;
+                    case DistributedCacheType.Redis:
+                        services.AddScoped<ILocker, RedisCacheManager>();
+                        services.AddScoped<IStaticCacheManager, RedisCacheManager>();
+                        break;
+                }
             }
             else
             {
@@ -223,6 +240,7 @@ namespace Nop.Web.Framework.Infrastructure
             services.AddScoped<IPickupPluginManager, PickupPluginManager>();
             services.AddScoped<IShippingPluginManager, ShippingPluginManager>();
             services.AddScoped<ITaxPluginManager, TaxPluginManager>();
+            services.AddScoped<ISearchPluginManager, SearchPluginManager>();
 
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 
@@ -248,20 +266,12 @@ namespace Nop.Web.Framework.Infrastructure
             else
                 services.AddScoped<IPictureService, PictureService>();
 
-            //roxy file manager service
-            services.AddTransient<DatabaseRoxyFilemanService>();
-            services.AddTransient<FileRoxyFilemanService>();
-
-            services.AddScoped<IRoxyFilemanService>(serviceProvider =>
-            {
-                return serviceProvider.GetRequiredService<IPictureService>().IsStoreInDbAsync().Result
-                    ? serviceProvider.GetRequiredService<DatabaseRoxyFilemanService>()
-                    : serviceProvider.GetRequiredService<FileRoxyFilemanService>();
-            });
+            //roxy file manager
+            services.AddScoped<IRoxyFilemanService, RoxyFilemanService>();
+            services.AddScoped<IRoxyFilemanFileProvider, RoxyFilemanFileProvider>();
 
             //installation service
-            if (!DataSettingsManager.IsDatabaseInstalled())
-                services.AddScoped<IInstallationService, InstallationService>();
+            services.AddScoped<IInstallationService, InstallationService>();
 
             //slug route transformer
             if (DataSettingsManager.IsDatabaseInstalled())
@@ -283,9 +293,14 @@ namespace Nop.Web.Framework.Infrastructure
 
             //XML sitemap
             services.AddScoped<IXmlSiteMap, XmlSiteMap>();
+
+            //register the Lazy resolver for .Net IoC
+            var useAutofac = appSettings.Get<CommonConfig>().UseAutofac;
+            if (!useAutofac)
+                services.AddScoped(typeof(Lazy<>), typeof(LazyInstance<>));
         }
 
-        // <summary>
+        /// <summary>
         /// Configure the using of added middleware
         /// </summary>
         /// <param name="application">Builder for configuring an application's request pipeline</param>

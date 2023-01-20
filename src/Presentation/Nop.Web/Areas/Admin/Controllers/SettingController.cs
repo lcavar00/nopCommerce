@@ -7,7 +7,6 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using Nop.Core;
 using Nop.Core.Configuration;
 using Nop.Core.Domain;
@@ -39,7 +38,6 @@ using Nop.Services.Helpers;
 using Nop.Services.Localization;
 using Nop.Services.Logging;
 using Nop.Services.Media;
-using Nop.Services.Media.RoxyFileman;
 using Nop.Services.Messages;
 using Nop.Services.Orders;
 using Nop.Services.Plugins;
@@ -78,8 +76,6 @@ namespace Nop.Web.Areas.Admin.Controllers
         private readonly IOrderService _orderService;
         private readonly IPermissionService _permissionService;
         private readonly IPictureService _pictureService;
-        private readonly IRoxyFilemanService _roxyFilemanService;
-        private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly ISettingModelFactory _settingModelFactory;
         private readonly ISettingService _settingService;
         private readonly IStoreContext _storeContext;
@@ -108,8 +104,6 @@ namespace Nop.Web.Areas.Admin.Controllers
             IOrderService orderService,
             IPermissionService permissionService,
             IPictureService pictureService,
-            IRoxyFilemanService roxyFilemanService,
-            IServiceScopeFactory serviceScopeFactory,
             ISettingModelFactory settingModelFactory,
             ISettingService settingService,
             IStoreContext storeContext,
@@ -134,8 +128,6 @@ namespace Nop.Web.Areas.Admin.Controllers
             _orderService = orderService;
             _permissionService = permissionService;
             _pictureService = pictureService;
-            _roxyFilemanService = roxyFilemanService;
-            _serviceScopeFactory = serviceScopeFactory;
             _settingModelFactory = settingModelFactory;
             _settingService = settingService;
             _storeContext = storeContext;
@@ -1103,6 +1095,7 @@ namespace Nop.Web.Areas.Admin.Controllers
                 await _settingService.SaveSettingOverridablePerStoreAsync(mediaSettings, x => x.DefaultImageQuality, model.DefaultImageQuality_OverrideForStore, storeScope, false);
                 await _settingService.SaveSettingOverridablePerStoreAsync(mediaSettings, x => x.ImportProductImagesUsingHash, model.ImportProductImagesUsingHash_OverrideForStore, storeScope, false);
                 await _settingService.SaveSettingOverridablePerStoreAsync(mediaSettings, x => x.DefaultPictureZoomEnabled, model.DefaultPictureZoomEnabled_OverrideForStore, storeScope, false);
+                await _settingService.SaveSettingOverridablePerStoreAsync(mediaSettings, x => x.AllowSVGUploads, model.AllowSVGUploads_OverrideForStore, storeScope, false);
                 await _settingService.SaveSettingOverridablePerStoreAsync(mediaSettings, x => x.ProductDefaultImageId, model.ProductDefaultImageId_OverrideForStore, storeScope, false);
 
                 //now clear settings cache
@@ -1130,18 +1123,7 @@ namespace Nop.Web.Areas.Admin.Controllers
             if (!await _permissionService.AuthorizeAsync(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
-            await _roxyFilemanService.FlushAllImagesOnDiskAsync();
-
             await _pictureService.SetIsStoreInDbAsync(!await _pictureService.IsStoreInDbAsync());
-
-            //use "Resolve" to load the correct service
-            //we do it because the IRoxyFilemanService service is registered for
-            //a scope and in the usual way to get a new instance there is no possibility
-            using (var scope = _serviceScopeFactory.CreateScope())
-            {
-                var newRoxyFilemanService = EngineContext.Current.Resolve<IRoxyFilemanService>(scope);
-                await newRoxyFilemanService.ConfigureAsync();
-            }
 
             //activity log
             await _customerActivityService.InsertActivityAsync("EditSettings", await _localizationService.GetResourceAsync("ActivityLog.EditSettings"));
@@ -1534,11 +1516,6 @@ namespace Nop.Web.Areas.Admin.Controllers
                 var seoSettings = await _settingService.LoadSettingAsync<SeoSettings>(storeScope);
                 seoSettings.PageTitleSeparator = model.SeoSettings.PageTitleSeparator;
                 seoSettings.PageTitleSeoAdjustment = (PageTitleSeoAdjustment)model.SeoSettings.PageTitleSeoAdjustment;
-                seoSettings.HomepageTitle = model.SeoSettings.HomepageTitle;
-                seoSettings.HomepageDescription = model.SeoSettings.HomepageDescription;
-                seoSettings.DefaultTitle = model.SeoSettings.DefaultTitle;
-                seoSettings.DefaultMetaKeywords = model.SeoSettings.DefaultMetaKeywords;
-                seoSettings.DefaultMetaDescription = model.SeoSettings.DefaultMetaDescription;
                 seoSettings.GenerateProductMetaDescription = model.SeoSettings.GenerateProductMetaDescription;
                 seoSettings.ConvertNonWesternChars = model.SeoSettings.ConvertNonWesternChars;
                 seoSettings.CanonicalUrlsEnabled = model.SeoSettings.CanonicalUrlsEnabled;
@@ -1553,11 +1530,6 @@ namespace Nop.Web.Areas.Admin.Controllers
                 //and loaded from database after each update
                 await _settingService.SaveSettingOverridablePerStoreAsync(seoSettings, x => x.PageTitleSeparator, model.SeoSettings.PageTitleSeparator_OverrideForStore, storeScope, false);
                 await _settingService.SaveSettingOverridablePerStoreAsync(seoSettings, x => x.PageTitleSeoAdjustment, model.SeoSettings.PageTitleSeoAdjustment_OverrideForStore, storeScope, false);
-                await _settingService.SaveSettingOverridablePerStoreAsync(seoSettings, x => x.HomepageTitle, model.SeoSettings.HomepageTitle_OverrideForStore, storeScope, false);
-                await _settingService.SaveSettingOverridablePerStoreAsync(seoSettings, x => x.HomepageDescription, model.SeoSettings.HomepageDescription_OverrideForStore, storeScope, false);
-                await _settingService.SaveSettingOverridablePerStoreAsync(seoSettings, x => x.DefaultTitle, model.SeoSettings.DefaultTitle_OverrideForStore, storeScope, false);
-                await _settingService.SaveSettingOverridablePerStoreAsync(seoSettings, x => x.DefaultMetaKeywords, model.SeoSettings.DefaultMetaKeywords_OverrideForStore, storeScope, false);
-                await _settingService.SaveSettingOverridablePerStoreAsync(seoSettings, x => x.DefaultMetaDescription, model.SeoSettings.DefaultMetaDescription_OverrideForStore, storeScope, false);
                 await _settingService.SaveSettingOverridablePerStoreAsync(seoSettings, x => x.GenerateProductMetaDescription, model.SeoSettings.GenerateProductMetaDescription_OverrideForStore, storeScope, false);
                 await _settingService.SaveSettingOverridablePerStoreAsync(seoSettings, x => x.ConvertNonWesternChars, model.SeoSettings.ConvertNonWesternChars_OverrideForStore, storeScope, false);
                 await _settingService.SaveSettingOverridablePerStoreAsync(seoSettings, x => x.CanonicalUrlsEnabled, model.SeoSettings.CanonicalUrlsEnabled_OverrideForStore, storeScope, false);
@@ -1586,7 +1558,7 @@ namespace Nop.Web.Areas.Admin.Controllers
                 var robotsTxtSettings = await _settingService.LoadSettingAsync<RobotsTxtSettings>(storeScope);
                 robotsTxtSettings.AllowSitemapXml = model.RobotsTxtSettings.AllowSitemapXml;
                 robotsTxtSettings.AdditionsRules = model.RobotsTxtSettings.AdditionsRules?.Split(Environment.NewLine).ToList();
-                robotsTxtSettings.DisallowLanguages = model.RobotsTxtSettings.DisallowLanguages.ToList();
+                robotsTxtSettings.DisallowLanguages = model.RobotsTxtSettings.DisallowLanguages?.ToList() ?? new List<int>(); 
                 robotsTxtSettings.DisallowPaths = model.RobotsTxtSettings.DisallowPaths?.Split(Environment.NewLine).ToList();
                 robotsTxtSettings.LocalizableDisallowPaths = model.RobotsTxtSettings.LocalizableDisallowPaths?.Split(Environment.NewLine).ToList();
 

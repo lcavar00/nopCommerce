@@ -461,11 +461,6 @@ namespace Nop.Web.Areas.Admin.Factories
                 PageTitleSeparator = seoSettings.PageTitleSeparator,
                 PageTitleSeoAdjustment = (int)seoSettings.PageTitleSeoAdjustment,
                 PageTitleSeoAdjustmentValues = await seoSettings.PageTitleSeoAdjustment.ToSelectListAsync(),
-                HomepageTitle = seoSettings.HomepageTitle,
-                HomepageDescription = seoSettings.HomepageDescription,
-                DefaultTitle = seoSettings.DefaultTitle,
-                DefaultMetaKeywords = seoSettings.DefaultMetaKeywords,
-                DefaultMetaDescription = seoSettings.DefaultMetaDescription,
                 GenerateProductMetaDescription = seoSettings.GenerateProductMetaDescription,
                 ConvertNonWesternChars = seoSettings.ConvertNonWesternChars,
                 CanonicalUrlsEnabled = seoSettings.CanonicalUrlsEnabled,
@@ -484,11 +479,6 @@ namespace Nop.Web.Areas.Admin.Factories
             //fill in overridden values
             model.PageTitleSeparator_OverrideForStore = await _settingService.SettingExistsAsync(seoSettings, x => x.PageTitleSeparator, storeId);
             model.PageTitleSeoAdjustment_OverrideForStore = await _settingService.SettingExistsAsync(seoSettings, x => x.PageTitleSeoAdjustment, storeId);
-            model.DefaultTitle_OverrideForStore = await _settingService.SettingExistsAsync(seoSettings, x => x.DefaultTitle, storeId);
-            model.HomepageTitle_OverrideForStore = await _settingService.SettingExistsAsync(seoSettings, x => x.HomepageTitle, storeId);
-            model.HomepageDescription_OverrideForStore = await _settingService.SettingExistsAsync(seoSettings, x => x.HomepageDescription, storeId);
-            model.DefaultMetaKeywords_OverrideForStore = await _settingService.SettingExistsAsync(seoSettings, x => x.DefaultMetaKeywords, storeId);
-            model.DefaultMetaDescription_OverrideForStore = await _settingService.SettingExistsAsync(seoSettings, x => x.DefaultMetaDescription, storeId);
             model.GenerateProductMetaDescription_OverrideForStore = await _settingService.SettingExistsAsync(seoSettings, x => x.GenerateProductMetaDescription, storeId);
             model.ConvertNonWesternChars_OverrideForStore = await _settingService.SettingExistsAsync(seoSettings, x => x.ConvertNonWesternChars, storeId);
             model.CanonicalUrlsEnabled_OverrideForStore = await _settingService.SettingExistsAsync(seoSettings, x => x.CanonicalUrlsEnabled, storeId);
@@ -830,11 +820,12 @@ namespace Nop.Web.Areas.Admin.Factories
                 LocalizableDisallowPaths =
                     string.Join(Environment.NewLine, robotsTxtSettings.LocalizableDisallowPaths),
                 DisallowLanguages = robotsTxtSettings.DisallowLanguages.ToList(),
-                AdditionsRules = string.Join(Environment.NewLine, robotsTxtSettings.AdditionsRules)
+                AdditionsRules = string.Join(Environment.NewLine, robotsTxtSettings.AdditionsRules),
+                AvailableLanguages = new List<SelectListItem>()
             };
 
             if (!model.AvailableLanguages.Any())
-                model.AvailableLanguages.AddRange((await _languageService.GetAllLanguagesAsync(storeId: storeId)).Select(p => new SelectListItem
+                (model.AvailableLanguages as List<SelectListItem>)?.AddRange((await _languageService.GetAllLanguagesAsync(storeId: storeId)).Select(p => new SelectListItem
                 {
                     Value = p.Id.ToString(),
                     Text = p.Name
@@ -1551,6 +1542,7 @@ namespace Nop.Web.Areas.Admin.Factories
             model.DefaultImageQuality_OverrideForStore = await _settingService.SettingExistsAsync(mediaSettings, x => x.DefaultImageQuality, storeId);
             model.ImportProductImagesUsingHash_OverrideForStore = await _settingService.SettingExistsAsync(mediaSettings, x => x.ImportProductImagesUsingHash, storeId);
             model.DefaultPictureZoomEnabled_OverrideForStore = await _settingService.SettingExistsAsync(mediaSettings, x => x.DefaultPictureZoomEnabled, storeId);
+            model.AllowSVGUploads_OverrideForStore = await _settingService.SettingExistsAsync(mediaSettings, x => x.AllowSVGUploads, storeId);
             model.ProductDefaultImageId_OverrideForStore = await _settingService.SettingExistsAsync(mediaSettings, x => x.ProductDefaultImageId, storeId);
 
             return model;
@@ -1740,7 +1732,7 @@ namespace Nop.Web.Areas.Admin.Factories
             //prepare PDF settings model
             model.PdfSettings = await PreparePdfSettingsModelAsync();
 
-            //prepare PDF settings model
+            //prepare localization settings model
             model.LocalizationSettings = await PrepareLocalizationSettingsModelAsync();
 
             //prepare admin area settings model

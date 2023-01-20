@@ -1007,7 +1007,7 @@ namespace Nop.Web.Controllers
 
                     //notifications
                     if (_customerSettings.NotifyNewCustomerRegistration)
-                        await _workflowMessageService.SendCustomerRegisteredNotificationMessageAsync(customer,
+                        await _workflowMessageService.SendCustomerRegisteredStoreOwnerNotificationMessageAsync(customer,
                             _localizationSettings.DefaultAdminLanguageId);
 
                     //raise event       
@@ -1651,6 +1651,9 @@ namespace Nop.Web.Controllers
                 {
                     _notificationService.SuccessNotification(await _localizationService.GetResourceAsync("Account.ChangePassword.Success"));
 
+                    //authenticate customer after changing password
+                    await _customerRegistrationService.SignInCustomerAsync(customer, null, true);
+
                     if (string.IsNullOrEmpty(returnUrl))
                         return View(model);
 
@@ -1699,9 +1702,9 @@ namespace Nop.Web.Controllers
             if (!_customerSettings.AllowCustomersToUploadAvatars)
                 return RedirectToRoute("CustomerInfo");
 
-            var contentType = uploadedFile.ContentType.ToLowerInvariant();
+            var contentType = uploadedFile?.ContentType.ToLowerInvariant();
 
-            if (!contentType.Equals("image/jpeg") && !contentType.Equals("image/gif"))
+            if (contentType != null && !contentType.Equals("image/jpeg") && !contentType.Equals("image/gif"))
                 ModelState.AddModelError("", await _localizationService.GetResourceAsync("Account.Avatar.UploadRules"));
 
             if (ModelState.IsValid)

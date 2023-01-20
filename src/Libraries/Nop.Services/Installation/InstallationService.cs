@@ -308,6 +308,11 @@ namespace Nop.Services.Installation
                 new Store
                 {
                     Name = "Your store name",
+                    DefaultTitle = "Your store",
+                    DefaultMetaKeywords = string.Empty,
+                    DefaultMetaDescription = string.Empty,
+                    HomepageTitle = "Home page title",
+                    HomepageDescription = "Home page description",
                     Url = storeUrl,
                     SslEnabled = _webHelper.IsCurrentConnectionSecured(),
                     Hosts = "yourstore.com,www.yourstore.com",
@@ -771,7 +776,7 @@ namespace Nop.Services.Installation
                 },
                 new ProductAvailabilityRange
                 {
-                    Name = "2 week",
+                    Name = "2 weeks",
                     DisplayOrder = 3
                 }
             };
@@ -2179,7 +2184,7 @@ namespace Nop.Services.Installation
             {
                 new MessageTemplate
                 {
-                    Name = MessageTemplateSystemNames.BlogCommentNotification,
+                    Name = MessageTemplateSystemNames.BlogCommentStoreOwnerNotification,
                     Subject = "%Store.Name%. New blog comment.",
                     Body = $"<p>{Environment.NewLine}<a href=\"%Store.URL%\">%Store.Name%</a>{Environment.NewLine}<br />{Environment.NewLine}<br />{Environment.NewLine}A new blog comment has been created for blog post \"%BlogComment.BlogPostTitle%\".{Environment.NewLine}</p>{Environment.NewLine}",
                     IsActive = true,
@@ -2259,7 +2264,7 @@ namespace Nop.Services.Installation
                 },
                 new MessageTemplate
                 {
-                    Name = MessageTemplateSystemNames.CustomerRegisteredNotification,
+                    Name = MessageTemplateSystemNames.CustomerRegisteredStoreOwnerNotification,
                     Subject = "%Store.Name%. New customer registration",
                     Body = $"<p>{Environment.NewLine}<a href=\"%Store.URL%\">%Store.Name%</a>{Environment.NewLine}<br />{Environment.NewLine}<br />{Environment.NewLine}A new customer registered with your store. Below are the customer's details:{Environment.NewLine}<br />{Environment.NewLine}Full name: %Customer.FullName%{Environment.NewLine}<br />{Environment.NewLine}Email: %Customer.Email%{Environment.NewLine}</p>{Environment.NewLine}",
                     IsActive = true,
@@ -2283,7 +2288,7 @@ namespace Nop.Services.Installation
                 },
                 new MessageTemplate
                 {
-                    Name = MessageTemplateSystemNames.NewsCommentNotification,
+                    Name = MessageTemplateSystemNames.NewsCommentStoreOwnerNotification,
                     Subject = "%Store.Name%. New news comment.",
                     Body = $"<p>{Environment.NewLine}<a href=\"%Store.URL%\">%Store.Name%</a>{Environment.NewLine}<br />{Environment.NewLine}<br />{Environment.NewLine}A new news comment has been created for news \"%NewsComment.NewsTitle%\".{Environment.NewLine}</p>{Environment.NewLine}",
                     IsActive = true,
@@ -2547,7 +2552,7 @@ namespace Nop.Services.Installation
                 },
                 new MessageTemplate
                 {
-                    Name = MessageTemplateSystemNames.VendorInformationChangeNotification,
+                    Name = MessageTemplateSystemNames.VendorInformationChangeStoreOwnerNotification,
                     Subject = "%Store.Name%. Vendor information change.",
                     Body = $"<p>{Environment.NewLine}<a href=\"%Store.URL%\">%Store.Name%</a>{Environment.NewLine}<br />{Environment.NewLine}<br />{Environment.NewLine}Vendor %Vendor.Name% (%Vendor.Email%) has just changed information about itself.{Environment.NewLine}</p>{Environment.NewLine}",
                     IsActive = true,
@@ -2759,7 +2764,7 @@ namespace Nop.Services.Installation
                 LogoPictureId = 0,
                 LetterPageSizeEnabled = false,
                 RenderOrderNotes = true,
-                FontFileName = "FreeSerif.ttf",
+                FontFamily = "FreeSerif",
                 InvoiceFooterTextColumn1 = null,
                 InvoiceFooterTextColumn2 = null
             });
@@ -2787,7 +2792,9 @@ namespace Nop.Services.Installation
                 SitemapXmlIncludeProducts = true,
                 SitemapXmlIncludeProductTags = true,
                 SitemapXmlIncludeCustomUrls = true,
-                SitemapXmlIncludeTopics = true
+                SitemapXmlIncludeTopics = true,
+                RebuildSitemapXmlAfterHours = 2 * 24,
+                SitemapBuildOperationDelay = 60
             });
 
             await settingService.SaveSettingAsync(new CommonSettings
@@ -2812,11 +2819,6 @@ namespace Nop.Services.Installation
             {
                 PageTitleSeparator = ". ",
                 PageTitleSeoAdjustment = PageTitleSeoAdjustment.PagenameAfterStorename,
-                HomepageTitle = "Home page title",
-                HomepageDescription = "Home page description",
-                DefaultTitle = "Your store",
-                DefaultMetaKeywords = string.Empty,
-                DefaultMetaDescription = string.Empty,
                 GenerateProductMetaDescription = true,
                 ConvertNonWesternChars = false,
                 AllowUnicodeCharsInUrls = true,
@@ -2840,7 +2842,7 @@ namespace Nop.Services.Installation
                 RichEditorAllowStyleTag = false,
                 UseRichEditorForCustomerEmails = false,
                 UseRichEditorInMessageTemplates = false,
-                CheckCopyrightRemovalKey = true,
+                CheckLicense = true,
                 UseIsoDateFormatInJsonResult = true,
                 ShowDocumentationReferenceLinks = true
             });
@@ -2969,7 +2971,8 @@ namespace Nop.Services.Installation
                 AllowCustomersToSearchWithCategoryName = true,
                 AllowCustomersToSearchWithManufacturerName = true,
                 DisplayAllPicturesOnCatalogPages = false,
-                ProductUrlStructureTypeId = (int)ProductUrlStructureType.Product
+                ProductUrlStructureTypeId = (int)ProductUrlStructureType.Product,
+                ActiveSearchProviderSystemName = string.Empty
             });
 
             await settingService.SaveSettingAsync(new LocalizationSettings
@@ -3096,6 +3099,7 @@ namespace Nop.Services.Installation
                 ImageSquarePictureSize = 32,
                 MaximumImageSize = 1980,
                 DefaultPictureZoomEnabled = false,
+                AllowSVGUploads = false,
                 DefaultImageQuality = 80,
                 MultipleThumbDirectories = false,
                 ImportProductImagesUsingHash = true,
@@ -3121,7 +3125,9 @@ namespace Nop.Services.Installation
 
             await settingService.SaveSettingAsync(new ExternalAuthenticationSettings
             {
-                RequireEmailValidation = false, LogErrors = false, AllowCustomersToRemoveAssociations = true
+                RequireEmailValidation = false,
+                LogErrors = false,
+                AllowCustomersToRemoveAssociations = true
             });
 
             await settingService.SaveSettingAsync(new RewardPointsSettings
@@ -3167,7 +3173,10 @@ namespace Nop.Services.Installation
 
             await settingService.SaveSettingAsync(new MessageTemplatesSettings
             {
-                CaseInvariantReplacement = false, Color1 = "#b9babe", Color2 = "#ebecee", Color3 = "#dde2e6"
+                CaseInvariantReplacement = false,
+                Color1 = "#b9babe",
+                Color2 = "#ebecee",
+                Color3 = "#dde2e6"
             });
 
             await settingService.SaveSettingAsync(new ShoppingCartSettings
@@ -3317,7 +3326,8 @@ namespace Nop.Services.Installation
 
             await settingService.SaveSettingAsync(new DateTimeSettings
             {
-                DefaultStoreTimeZoneId = string.Empty, AllowCustomersToSetTimeZone = false
+                DefaultStoreTimeZoneId = string.Empty,
+                AllowCustomersToSetTimeZone = false
             });
 
             await settingService.SaveSettingAsync(new BlogSettings
@@ -9201,6 +9211,15 @@ namespace Nop.Services.Installation
                     Name = "Keep alive",
                     Seconds = 300,
                     Type = "Nop.Services.Common.KeepAliveTask, Nop.Services",
+                    Enabled = true,
+                    LastEnabledUtc = lastEnabledUtc,
+                    StopOnError = false
+                },
+                new ScheduleTask
+                {
+                    Name = nameof(ResetLicenseCheckTask),
+                    Seconds = 2073600,
+                    Type = "Nop.Services.Common.ResetLicenseCheckTask, Nop.Services",
                     Enabled = true,
                     LastEnabledUtc = lastEnabledUtc,
                     StopOnError = false

@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Encodings.Web;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
@@ -38,6 +40,8 @@ namespace Nop.Web.Framework.UI
         private readonly HtmlEncoder _htmlEncoder;
         private readonly IActionContextAccessor _actionContextAccessor;
         private readonly IAssetPipeline _assetPipeline;
+        private readonly Lazy<ILocalizationService> _localizationService;
+        private readonly IStoreContext _storeContext;
         private readonly IUrlHelperFactory _urlHelperFactory;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly SeoSettings _seoSettings;
@@ -64,6 +68,8 @@ namespace Nop.Web.Framework.UI
             HtmlEncoder htmlEncoder,
             IActionContextAccessor actionContextAccessor,
             IAssetPipeline assetPipeline,
+            Lazy<ILocalizationService> localizationService,
+            IStoreContext storeContext,
             IUrlHelperFactory urlHelperFactory,
             IWebHostEnvironment webHostEnvironment,
             SeoSettings seoSettings)
@@ -71,7 +77,9 @@ namespace Nop.Web.Framework.UI
             _appSettings = appSettings;
             _htmlEncoder = htmlEncoder;
             _actionContextAccessor = actionContextAccessor;
+            _localizationService = localizationService;
             _assetPipeline = assetPipeline;
+            _storeContext = storeContext;
             _urlHelperFactory = urlHelperFactory;
             _webHostEnvironment = webHostEnvironment;
             _seoSettings = seoSettings;
@@ -110,16 +118,22 @@ namespace Nop.Web.Framework.UI
             return asset;
         }
 
-        private string GetAssetKey(string key, ResourceLocation location)
+        private static string GetAssetKey(string[] keys, string suffix)
         {
-            var keyPrefix = Enum.GetName(location) + key;
+            if (keys is null || keys.Length == 0)
+                throw new ArgumentNullException(nameof(keys));
 
-            var routeKey = GetRouteName(handleDefaultRoutes: true);
+            var hashInput = string.Join(',', keys);
 
-            if (string.IsNullOrEmpty(routeKey))
-                return keyPrefix;
+            using var sha = MD5.Create();
+            var input = sha.ComputeHash(Encoding.Unicode.GetBytes(hashInput));
 
-            return string.Concat(routeKey, ".", keyPrefix);
+            var key = string.Concat(WebEncoders.Base64UrlEncode(input));
+
+            if (!string.IsNullOrEmpty(suffix))
+                key += suffix;
+
+            return key.ToLower();
         }
 
         /// <summary>
@@ -185,16 +199,19 @@ namespace Nop.Web.Framework.UI
 
             _titleParts.Insert(0, part);
         }
-
+        
         /// <summary>
         /// Generate all title parts
         /// </summary>
         /// <param name="addDefaultTitle">A value indicating whether to insert a default title</param>
         /// <param name="part">Title part</param>
-        /// <returns>Generated HTML string</returns>
-        public virtual IHtmlContent GenerateTitle(bool addDefaultTitle = true, string part = "")
+        /// <returns>A task that represents the asynchronous operation
+        /// The task result contains generated HTML string</returns>
+        public virtual async Task<IHtmlContent> GenerateTitleAsync(bool addDefaultTitle = true, string part = "")
         {
             AppendTitleParts(part);
+            var store = await _storeContext.GetCurrentStoreAsync();
+            var defaultTitle = await _localizationService.Value.GetLocalizedAsync(store, s => s.DefaultTitle);
 
             var specificTitle = string.Join(_seoSettings.PageTitleSeparator, _titleParts.AsEnumerable().Reverse().ToArray());
             string result;
@@ -205,15 +222,15 @@ namespace Nop.Web.Framework.UI
                     switch (_seoSettings.PageTitleSeoAdjustment)
                     {
                         case PageTitleSeoAdjustment.PagenameAfterStorename:
-                        {
-                            result = string.Join(_seoSettings.PageTitleSeparator, _seoSettings.DefaultTitle, specificTitle);
-                        }
+                            {
+                                result = string.Join(_seoSettings.PageTitleSeparator, defaultTitle, specificTitle);
+                            }
                             break;
                         case PageTitleSeoAdjustment.StorenameAfterPagename:
                         default:
-                        {
-                            result = string.Join(_seoSettings.PageTitleSeparator, specificTitle, _seoSettings.DefaultTitle);
-                        }
+                            {
+                                result = string.Join(_seoSettings.PageTitleSeparator, specificTitle, defaultTitle);
+                            }
                             break;
                     }
                 else
@@ -222,9 +239,9 @@ namespace Nop.Web.Framework.UI
             }
             else
                 //store name only
-                result = _seoSettings.DefaultTitle;
+                result = defaultTitle;
 
-            return new HtmlString(_htmlEncoder.Encode(result));
+            return new HtmlString(_htmlEncoder.Encode(result ?? string.Empty));
         }
 
         /// <summary>
@@ -255,15 +272,19 @@ namespace Nop.Web.Framework.UI
         /// Generate all description parts
         /// </summary>
         /// <param name="part">Meta description part</param>
-        /// <returns>Generated HTML string</returns>
-        public virtual IHtmlContent GenerateMetaDescription(string part = "")
+        /// <returns>A task that represents the asynchronous operation
+        /// The task result contains generated HTML string</returns>
+        public virtual async Task<IHtmlContent> GenerateMetaDescriptionAsync(string part = "")
         {
             AppendMetaDescriptionParts(part);
 
             var metaDescription = string.Join(", ", _metaDescriptionParts.AsEnumerable().Reverse().ToArray());
-            var result = !string.IsNullOrEmpty(metaDescription) ? metaDescription : _seoSettings.DefaultMetaDescription;
+            var result = !string.IsNullOrEmpty(metaDescription)
+                ? metaDescription
+                : await _localizationService.Value.GetLocalizedAsync(await _storeContext.GetCurrentStoreAsync(),
+                    s => s.DefaultMetaDescription);
 
-            return new HtmlString(_htmlEncoder.Encode(result));
+            return new HtmlString(_htmlEncoder.Encode(result ?? string.Empty));
         }
 
         /// <summary>
@@ -294,15 +315,19 @@ namespace Nop.Web.Framework.UI
         /// Generate all keyword parts
         /// </summary>
         /// <param name="part">Meta keyword part</param>
-        /// <returns>Generated HTML string</returns>
-        public virtual IHtmlContent GenerateMetaKeywords(string part = "")
+        /// <returns>A task that represents the asynchronous operation
+        /// The task result contains generated HTML string</returns>
+        public virtual async Task<IHtmlContent> GenerateMetaKeywordsAsync(string part = "")
         {
             AppendMetaKeywordParts(part);
 
             var metaKeyword = string.Join(", ", _metaKeywordParts.AsEnumerable().Reverse().ToArray());
-            var result = !string.IsNullOrEmpty(metaKeyword) ? metaKeyword : _seoSettings.DefaultMetaKeywords;
+            var result = !string.IsNullOrEmpty(metaKeyword)
+                ? metaKeyword
+                : await _localizationService.Value.GetLocalizedAsync(await _storeContext.GetCurrentStoreAsync(),
+                    s => s.DefaultMetaKeywords);
 
-            return new HtmlString(_htmlEncoder.Encode(result));
+            return new HtmlString(_htmlEncoder.Encode(result ?? string.Empty));
         }
 
         /// <summary>
@@ -387,18 +412,18 @@ namespace Nop.Web.Framework.UI
 
             if (woConfig.EnableJavaScriptBundling && _scriptParts[location].Any(item => !item.ExcludeFromBundle))
             {
-                var bundleKey = string.Concat("/js/", GetAssetKey(woConfig.JavaScriptBundleSuffix, location), ".js");
-
                 var sources = _scriptParts[location]
-                    .Where(item => !item.ExcludeFromBundle && item.IsLocal)
-                    .Select(item => item.Src)
-                    .Distinct().ToArray();
+                   .Where(item => !item.ExcludeFromBundle && item.IsLocal)
+                   .Select(item => item.Src)
+                   .Distinct().ToArray();
+
+                var bundleKey = string.Concat("/js/", GetAssetKey(sources, woConfig.JavaScriptBundleSuffix), ".js");
 
                 var bundleAsset = GetOrCreateBundle(bundleKey, CreateJavaScriptAsset, sources);
 
                 var pathBase = _actionContextAccessor.ActionContext?.HttpContext.Request.PathBase ?? PathString.Empty;
                 result.AppendFormat("<script type=\"{0}\" src=\"{1}{2}?v={3}\"></script>",
-                    MimeTypes.TextJavascript, pathBase, bundleAsset.Route, bundleAsset.GenerateCacheKey(httpContext));
+                    MimeTypes.TextJavascript, pathBase, bundleAsset.Route, bundleAsset.GenerateCacheKey(httpContext, woConfig));
             }
 
             var scripts = _scriptParts[location]
@@ -417,7 +442,7 @@ namespace Nop.Web.Framework.UI
                 var asset = GetOrCreateBundle(item.Src, CreateJavaScriptAsset);
 
                 result.AppendFormat("<script type=\"{0}\" src=\"{1}?v={2}\"></script>",
-                    MimeTypes.TextJavascript, asset.Route, asset.GenerateCacheKey(httpContext));
+                    MimeTypes.TextJavascript, asset.Route, asset.GenerateCacheKey(httpContext, woConfig));
 
                 result.Append(Environment.NewLine);
             }
@@ -560,19 +585,19 @@ namespace Nop.Web.Framework.UI
                 if (CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft)
                     bundleSuffix += ".rtl";
 
-                var bundleKey = string.Concat("/css/", GetAssetKey(bundleSuffix, ResourceLocation.Head), ".css");
-
                 var sources = _cssParts
                     .Where(item => !item.ExcludeFromBundle && item.IsLocal)
                     .Distinct()
                     //remove the application path from the generated URL if exists
                     .Select(item => item.Src).ToArray();
 
+                var bundleKey = string.Concat("/css/", GetAssetKey(sources, bundleSuffix), ".css");
+
                 var bundleAsset = GetOrCreateBundle(bundleKey, CreateCssAsset, sources);
 
                 var pathBase = _actionContextAccessor.ActionContext?.HttpContext.Request.PathBase ?? PathString.Empty;
                 result.AppendFormat("<link rel=\"stylesheet\" type=\"{0}\" href=\"{1}{2}?v={3}\" />",
-                    MimeTypes.TextCss, pathBase, bundleAsset.Route, bundleAsset.GenerateCacheKey(httpContext));
+                    MimeTypes.TextCss, pathBase, bundleAsset.Route, bundleAsset.GenerateCacheKey(httpContext, woConfig));
             }
 
             var styles = _cssParts
@@ -594,7 +619,7 @@ namespace Nop.Web.Framework.UI
                 var asset = GetOrCreateBundle(item.Src, CreateCssAsset);
 
                 result.AppendFormat("<link rel=\"stylesheet\" type=\"{0}\" href=\"{1}?v={2}\" />",
-                    MimeTypes.TextCss, asset.Route, asset.GenerateCacheKey(httpContext));
+                    MimeTypes.TextCss, asset.Route, asset.GenerateCacheKey(httpContext, woConfig));
                 result.AppendLine();
             }
 
@@ -806,7 +831,7 @@ namespace Nop.Web.Framework.UI
         }
 
         #endregion
-        
+
         #region Nested classes
 
         /// <summary>

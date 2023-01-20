@@ -1158,14 +1158,17 @@ namespace Nop.Services.Messages
         /// </summary>
         /// <param name="tokens">List of already added tokens</param>
         /// <param name="giftCard">Gift card</param>
+        /// <param name="languageId">Language identifier</param>
         /// <returns>A task that represents the asynchronous operation</returns>
-        public virtual async Task AddGiftCardTokensAsync(IList<Token> tokens, GiftCard giftCard)
+        public virtual async Task AddGiftCardTokensAsync(IList<Token> tokens, GiftCard giftCard, int languageId)
         {
             tokens.Add(new Token("GiftCard.SenderName", giftCard.SenderName));
             tokens.Add(new Token("GiftCard.SenderEmail", giftCard.SenderEmail));
             tokens.Add(new Token("GiftCard.RecipientName", giftCard.RecipientName));
             tokens.Add(new Token("GiftCard.RecipientEmail", giftCard.RecipientEmail));
-            tokens.Add(new Token("GiftCard.Amount", await _priceFormatter.FormatPriceAsync(giftCard.Amount, true, false)));
+
+            var primaryStoreCurrency = await _currencyService.GetCurrencyByIdAsync(_currencySettings.PrimaryStoreCurrencyId);
+            tokens.Add(new Token("GiftCard.Amount", await _priceFormatter.FormatPriceAsync(giftCard.Amount, true, primaryStoreCurrency.CurrencyCode, false, languageId)));
             tokens.Add(new Token("GiftCard.CouponCode", giftCard.GiftCardCouponCode));
 
             var giftCardMessage = !string.IsNullOrWhiteSpace(giftCard.Message) ?
@@ -1351,10 +1354,13 @@ namespace Nop.Services.Messages
             var productAttributeFormatter = EngineContext.Current.Resolve<IProductAttributeFormatter>();
 
             var product = await _productService.GetProductByIdAsync(combination.ProductId);
-
+            var currentCustomer = await _workContext.GetCurrentCustomerAsync();
+            var currentStore = await _storeContext.GetCurrentStoreAsync();
+            
             var attributes = await productAttributeFormatter.FormatAttributesAsync(product,
                 combination.AttributesXml,
-                await _workContext.GetCurrentCustomerAsync(),
+                currentCustomer,
+                currentStore,
                 renderPrices: false);
 
             tokens.Add(new Token("AttributeCombination.Formatted", attributes, true));
@@ -1528,7 +1534,7 @@ namespace Nop.Services.Messages
             //groups depend on which tokens are added at the appropriate methods in IWorkflowMessageService
             return messageTemplate.Name switch
             {
-                MessageTemplateSystemNames.CustomerRegisteredNotification or 
+                MessageTemplateSystemNames.CustomerRegisteredStoreOwnerNotification or 
                 MessageTemplateSystemNames.CustomerWelcomeMessage or 
                 MessageTemplateSystemNames.CustomerEmailValidationMessage or 
                 MessageTemplateSystemNames.CustomerEmailRevalidationMessage or 
@@ -1573,7 +1579,7 @@ namespace Nop.Services.Messages
                 MessageTemplateSystemNames.NewForumPostMessage => new[] { TokenGroupNames.StoreTokens, TokenGroupNames.ForumPostTokens, TokenGroupNames.ForumTopicTokens, TokenGroupNames.ForumTokens, TokenGroupNames.CustomerTokens },
                 MessageTemplateSystemNames.PrivateMessageNotification => new[] { TokenGroupNames.StoreTokens, TokenGroupNames.PrivateMessageTokens, TokenGroupNames.CustomerTokens },
                 MessageTemplateSystemNames.NewVendorAccountApplyStoreOwnerNotification => new[] { TokenGroupNames.StoreTokens, TokenGroupNames.CustomerTokens, TokenGroupNames.VendorTokens },
-                MessageTemplateSystemNames.VendorInformationChangeNotification => new[] { TokenGroupNames.StoreTokens, TokenGroupNames.VendorTokens },
+                MessageTemplateSystemNames.VendorInformationChangeStoreOwnerNotification => new[] { TokenGroupNames.StoreTokens, TokenGroupNames.VendorTokens },
                 MessageTemplateSystemNames.GiftCardNotification => new[] { TokenGroupNames.StoreTokens, TokenGroupNames.GiftCardTokens },
 
                 MessageTemplateSystemNames.ProductReviewStoreOwnerNotification or 
@@ -1582,8 +1588,8 @@ namespace Nop.Services.Messages
                 MessageTemplateSystemNames.QuantityBelowStoreOwnerNotification => new[] { TokenGroupNames.StoreTokens, TokenGroupNames.ProductTokens },
                 MessageTemplateSystemNames.QuantityBelowAttributeCombinationStoreOwnerNotification => new[] { TokenGroupNames.StoreTokens, TokenGroupNames.ProductTokens, TokenGroupNames.AttributeCombinationTokens },
                 MessageTemplateSystemNames.NewVatSubmittedStoreOwnerNotification => new[] { TokenGroupNames.StoreTokens, TokenGroupNames.CustomerTokens, TokenGroupNames.VatValidation },
-                MessageTemplateSystemNames.BlogCommentNotification => new[] { TokenGroupNames.StoreTokens, TokenGroupNames.BlogCommentTokens, TokenGroupNames.CustomerTokens },
-                MessageTemplateSystemNames.NewsCommentNotification => new[] { TokenGroupNames.StoreTokens, TokenGroupNames.NewsCommentTokens, TokenGroupNames.CustomerTokens },
+                MessageTemplateSystemNames.BlogCommentStoreOwnerNotification => new[] { TokenGroupNames.StoreTokens, TokenGroupNames.BlogCommentTokens, TokenGroupNames.CustomerTokens },
+                MessageTemplateSystemNames.NewsCommentStoreOwnerNotification => new[] { TokenGroupNames.StoreTokens, TokenGroupNames.NewsCommentTokens, TokenGroupNames.CustomerTokens },
                 MessageTemplateSystemNames.BackInStockNotification => new[] { TokenGroupNames.StoreTokens, TokenGroupNames.CustomerTokens, TokenGroupNames.ProductBackInStockTokens },
                 MessageTemplateSystemNames.ContactUsMessage => new[] { TokenGroupNames.StoreTokens, TokenGroupNames.ContactUs },
                 MessageTemplateSystemNames.ContactVendorMessage => new[] { TokenGroupNames.StoreTokens, TokenGroupNames.ContactVendor },

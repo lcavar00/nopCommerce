@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using AutoMapper.Internal;
 using Nop.Core.Configuration;
 using Nop.Core.Domain.Affiliates;
 using Nop.Core.Domain.Blogs;
@@ -111,7 +112,7 @@ namespace Nop.Web.Areas.Admin.Infrastructure.Mapper
             CreateWarehouseMaps();
 
             //add some generic mapping rules
-            ForAllMaps((mapConfiguration, map) =>
+            this.Internal().ForAllMaps((mapConfiguration, map) =>
             {
                 //exclude Form and CustomProperties from mapping BaseNopModel
                 if (typeof(BaseNopModel).IsAssignableFrom(mapConfiguration.DestinationType))
@@ -424,7 +425,8 @@ namespace Nop.Web.Areas.Admin.Infrastructure.Mapper
                 .ForMember(settings => settings.ProductSortingEnumDisplayOrder, options => options.Ignore())
                 .ForMember(settings => settings.PublishBackProductWhenCancellingOrders, options => options.Ignore())
                 .ForMember(settings => settings.UseAjaxLoadMenu, options => options.Ignore())
-                .ForMember(settings => settings.UseLinksInRequiredProductWarnings, options => options.Ignore());
+                .ForMember(settings => settings.UseLinksInRequiredProductWarnings, options => options.Ignore())
+                .ForMember(settings => settings.ActiveSearchProviderSystemName, options => options.Ignore());
 
             CreateMap<ProductCategory, CategoryProductModel>()
                 .ForMember(model => model.ProductName, options => options.Ignore());
@@ -1131,7 +1133,8 @@ namespace Nop.Web.Areas.Admin.Infrastructure.Mapper
                 .ForMember(model => model.ProductThumbPictureSizeOnProductDetailsPage_OverrideForStore, options => options.Ignore())
                 .ForMember(model => model.ProductThumbPictureSize_OverrideForStore, options => options.Ignore())
                 .ForMember(model => model.VendorThumbPictureSize_OverrideForStore, options => options.Ignore())
-                .ForMember(model => model.ProductDefaultImageId_OverrideForStore, options => options.Ignore());
+                .ForMember(model => model.ProductDefaultImageId_OverrideForStore, options => options.Ignore())
+                .ForMember(model => model.AllowSVGUploads_OverrideForStore, options => options.Ignore());
             CreateMap<MediaSettingsModel, MediaSettings>()
                 .ForMember(settings => settings.AutoCompleteSearchThumbPictureSize, options => options.Ignore())
                 .ForMember(settings => settings.AzureCacheControlHeader, options => options.Ignore())
@@ -1577,6 +1580,7 @@ namespace Nop.Web.Areas.Admin.Infrastructure.Mapper
             CreateMap<Store, StoreModel>()
                 .ForMember(model => model.AvailableLanguages, options => options.Ignore());
             CreateMap<StoreModel, Store>()
+                .ForMember(entity => entity.SslEnabled, options => options.Ignore())
                 .ForMember(entity => entity.Deleted, options => options.Ignore());
         }
 

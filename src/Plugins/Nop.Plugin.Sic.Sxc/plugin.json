@@ -1,11 +1,11 @@
 ﻿{
-  "Group": "2sic",
-  "FriendlyName": "2sxc",
-  "SystemName": "2sic.2sxc",
+  "Group": "Sic",
+  "FriendlyName": "Sxc",
+  "SystemName": "Sic.Sxc",
   "Version": "1.0",
   "SupportedVersions": [ "4.60" ],
   "Author": "Luka Ćavar",
   "DisplayOrder": 1,
-  "FileName": "Nop.Plugin.2sic.2sxc.dll",
+  "FileName": "Nop.Plugin.Sic.Sxc.dll",
   "Description": "nopCommerce plugin integration with 2sic 2sxc"
 }
