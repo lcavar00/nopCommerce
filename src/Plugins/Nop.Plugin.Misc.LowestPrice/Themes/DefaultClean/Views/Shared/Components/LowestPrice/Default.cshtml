@@ -1,0 +1,69 @@
+﻿@model Nop.Plugin.Misc.LowestPrice.Models.LowestPriceModel
+
+@if(Model != null)
+{
+	<div class="js-lowest-price-container">
+		<span class="lowest-discounted-price">
+			@Model.DiscountedPrice
+		</span>
+		<span class="lowest-price">
+			@Model.Price
+		</span>
+	</div>
+	<script>
+		var lowestPriceElem = document.querySelector('.js-lowest-price-container'); 
+		var priceContainer = document.querySelector('.prices');
+		priceContainer.append(lowestPriceElem);
+
+		var attributeInputs = document.querySelectorAll('.attributes input, select');
+
+		attributeInputs.forEach(input => {
+			input.addEventListener('change', async (event) => {
+				var response = await postData();
+			
+				if(response.price){
+					document.querySelector('.js-lowest-price-container .lowest-price').innerHTML = response.price;
+				}
+
+				if(response.discountedPrice){
+					document.querySelector('.js-lowest-price-container .lowest-discounted-price').innerHTML = response.discountedPrice;
+				}
+			})
+		});
+
+
+		async function postData() {
+			let form = document.querySelector('#product-details-form');
+			// Get all field data from the form
+			let formData = new FormData(form);
+			let data = serialize(Object.fromEntries(formData));
+
+			let url = '@Html.Raw(Url.Action("productdetails_attributechange", "lowestPrice", new { productId = Model.ProductId}))';
+			// Default options are marked with *
+			const response = await fetch(url, {
+				method: 'POST', // *GET, POST, PUT, DELETE, etc.
+				//mode: 'cors', // no-cors, *cors, same-origin
+				cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+				credentials: 'same-origin', // include, *same-origin, omit
+				headers: {
+				// 'Content-Type': 'application/json'
+				'Content-Type': 'application/x-www-form-urlencoded',
+				},
+				redirect: 'follow', // manual, *follow, error
+				referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+				body: data // body data type must match "Content-Type" header
+			});
+			return response.json(); // parses JSON response into native JavaScript objects
+		}
+
+		function serialize(obj) {
+			var str = [];
+			for (var p in obj)
+				if (obj.hasOwnProperty(p)) {
+				str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+				}
+			return str.join("&");
+			}
+	</script>
+}
+

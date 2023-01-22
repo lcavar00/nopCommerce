@@ -1,0 +1,36 @@
+@model GalleryModel
+@{    
+    //page title
+    ViewBag.PageTitle = T("Admin.ContentManagement.Galleries.EditGalleryPostDetails").Text;
+    //active menu item (system name)
+    Html.SetActiveMenuItemSystemName("Galleries");
+}
+
+<form asp-controller="Gallery" asp-action="GalleryEdit" method="post">
+    <div class="content-header clearfix">
+        <h1 class="float-left">
+            @T("Admin.ContentManagement.Galleries.EditGalleryDetails") - @Model.Title
+            <small>
+                <i class="fas fa-arrow-circle-left"></i>
+                <a asp-action="Galleries">@T("Admin.ContentManagement.Galleries.BackToList")</a>
+            </small>
+        </h1>
+        <div class="float-right">
+            <button type="submit" name="save" class="btn btn-primary">
+                <i class="far fa-save"></i>
+                @T("Admin.Common.Save")
+            </button>
+            <button type="submit" name="save-continue" class="btn btn-primary">
+                <i class="far fa-save"></i>
+                @T("Admin.Common.SaveContinue")
+            </button>
+            <span id="gallery-delete" class="btn btn-danger">
+                <i class="far fa-trash-alt"></i>
+                @T("Admin.Common.Delete")
+            </span>
+            @await Component.InvokeAsync("AdminWidget", new { widgetZone = AdminWidgetZonesExtension.GalleryDetailsButtons, additionalData = Model })
+        </div>
+    </div>
+    @await Html.PartialAsync("_CreateOrUpdate", Model)
+</form>
+<nop-delete-confirmation asp-model-id="@Model.Id" asp-button-id="gallery-delete" />

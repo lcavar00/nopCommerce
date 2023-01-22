@@ -1,0 +1,156 @@
+﻿@model Nop.Plugin.Shipping.Core.Areas.Admin.Models.ShippingPickupAddressSettingsModel
+
+<div class="card-group">
+    <div class="card-body js-required-fields-checkboxes">
+        <div class="form-group row">
+            <div class="col-md-3">
+                <nop-label asp-for="PickupAddressSettingsModel.FirstNameRequired" />
+            </div>
+            <div class="col-md-9 js-first-name-required-checkbox">
+                <nop-editor asp-for="PickupAddressSettingsModel.FirstNameRequired" onchange="MakeInputRequired(this)" />
+                <span asp-validation-for="PickupAddressSettingsModel.FirstNameRequired"></span>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-md-3">
+                <nop-label asp-for="PickupAddressSettingsModel.LastNameRequired" />
+            </div>
+            <div class="col-md-9 js-last-name-required-checkbox">
+                <nop-editor asp-for="PickupAddressSettingsModel.LastNameRequired" onchange="MakeInputRequired(this)" />
+                <span asp-validation-for="PickupAddressSettingsModel.LastNameRequired"></span>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-md-3">
+                <nop-label asp-for="PickupAddressSettingsModel.PhoneRequired" />
+            </div>
+            <div class="col-md-9 js-phone-required-checkbox">
+                <nop-editor asp-for="PickupAddressSettingsModel.PhoneRequired" onchange="MakeInputRequired(this)" />
+                <span asp-validation-for="PickupAddressSettingsModel.PhoneRequired"></span>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-md-3">
+                <nop-label asp-for="PickupAddressSettingsModel.EmailRequired" />
+            </div>
+            <div class="col-md-9 js-email-required-checkbox">
+                <nop-editor asp-for="PickupAddressSettingsModel.EmailRequired" onchange="MakeInputRequired(this)" />
+                <span asp-validation-for="PickupAddressSettingsModel.EmailRequired"></span>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-md-3">
+                <nop-label asp-for="PickupAddressSettingsModel.CompanyRequired" />
+            </div>
+            <div class="col-md-9 js-company-required-checkbox">
+                <nop-editor asp-for="PickupAddressSettingsModel.CompanyRequired" onchange="MakeInputRequired(this)" />
+                <span asp-validation-for="PickupAddressSettingsModel.CompanyRequired"></span>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-md-3">
+                <nop-label asp-for="PickupAddressSettingsModel.StreetAddressRequired" />
+            </div>
+            <div class="col-md-9 js-street-address1-required-checkbox">
+                <nop-editor asp-for="PickupAddressSettingsModel.StreetAddressRequired" onchange="MakeInputRequired(this)" />
+                <span asp-validation-for="PickupAddressSettingsModel.StreetAddressRequired"></span>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-md-3">
+                <nop-label asp-for="PickupAddressSettingsModel.StreetAddress2Required" />
+            </div>
+            <div class="col-md-9 js-street-address2-required-checkbox">
+                <nop-editor asp-for="PickupAddressSettingsModel.StreetAddress2Required" onchange="MakeInputRequired(this)" />
+                <span asp-validation-for="PickupAddressSettingsModel.StreetAddress2Required"></span>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-md-3">
+                <nop-label asp-for="PickupAddressSettingsModel.ZipPostalCodeRequired" />
+            </div>
+            <div class="col-md-9 js-zip-postal-code-required-checkbox">
+                <nop-editor asp-for="PickupAddressSettingsModel.ZipPostalCodeRequired" onchange="MakeInputRequired(this)" />
+                <span asp-validation-for="PickupAddressSettingsModel.ZipPostalCodeRequired"></span>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-md-3">
+                <nop-label asp-for="PickupAddressSettingsModel.CityRequired" />
+            </div>
+            <div class="col-md-9 js-city-required-checkbox">
+                <nop-editor asp-for="PickupAddressSettingsModel.CityRequired" onchange="MakeInputRequired(this)" />
+                <span asp-validation-for="PickupAddressSettingsModel.CityRequired"></span>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-md-3">
+                <nop-label asp-for="PickupAddressSettingsModel.CountyRequired" />
+            </div>
+            <div class="col-md-9 js-county-required-checkbox">
+                <nop-editor asp-for="PickupAddressSettingsModel.CountyRequired" onchange="MakeInputRequired(this)" />
+                <span asp-validation-for="PickupAddressSettingsModel.CountyRequired"></span>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-md-3">
+                <nop-label asp-for="PickupAddressSettingsModel.StateProvinceEnabled" />
+            </div>
+            <div class="col-md-9 js-county-required-checkbox">
+                <nop-editor asp-for="PickupAddressSettingsModel.StateProvinceEnabled" onchange="MakeInputRequired(this)" />
+                <span asp-validation-for="PickupAddressSettingsModel.StateProvinceEnabled"></span>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-md-3">
+                <nop-label asp-for="PickupAddressSettingsModel.CountryRequired" />
+            </div>
+            <div class="col-md-9 js-country-required-checkbox">
+                <nop-editor asp-for="PickupAddressSettingsModel.CountryRequired" onchange="MakeInputRequired(this)" />
+                <span asp-validation-for="PickupAddressSettingsModel.CountryRequired"></span>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-md-3">
+                <nop-label asp-for="PickupAddressSettingsModel.FaxRequired" />
+            </div>
+            <div class="col-md-9 js-fax-required-checkbox">
+                <nop-editor asp-for="PickupAddressSettingsModel.FaxRequired" onchange="MakeInputRequired(this)" />
+                <span asp-validation-for="PickupAddressSettingsModel.FaxRequired"></span>
+            </div>
+        </div>
+
+        <div class="panel-body">
+            @*render custom address attributes*@
+            @await Html.PartialAsync("ListBlock.cshtml", Model.AddressAttributeSearchModel)
+        </div>
+
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        var checkboxes = $('.js-required-fields-checkboxes').find('[type=checkbox]');
+
+        for (var i = 0; i < checkboxes.length; i++) {
+            $(checkboxes[i]).on('change', function () {
+                console.log(this);
+                var inputName = this.name.replace('PickupAddressSettingsModel.', '');
+                $('#' + inputName).val('True');
+                console.log($('#' + inputName));
+            });
+        }
+    });
+
+</script>

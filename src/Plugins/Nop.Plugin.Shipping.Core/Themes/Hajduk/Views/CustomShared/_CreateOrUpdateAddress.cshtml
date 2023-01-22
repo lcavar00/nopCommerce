@@ -1,0 +1,187 @@
+﻿@model AddressModel
+@if (Model.CountryEnabled && Model.StateProvinceEnabled)
+{
+    //we don't move this script to the footer as it's used in Ajax requests where footer is not available
+    <script>
+        $(document).ready(function () {
+            $("#@Html.IdFor(model => model.CountryId)").on('change', function () {
+            var selectedItem = $(this).val();
+            var ddlStates = $("#@Html.IdFor(model => model.StateProvinceId)");
+            var statesProgress = $("#states-loading-progress");
+            statesProgress.show();
+                $.ajax({
+                cache: false,
+                    type: "GET",
+                    url: "@(Url.RouteUrl("GetStatesByCountryId"))",
+                    data: { "countryId": selectedItem, "addSelectStateItem": "true" },
+                    success: function (data) {
+                    ddlStates.html('');
+                        $.each(data, function (id, option) {
+                        ddlStates.append($('<option></option>').val(option.id).html(option.name));
+                    });
+                    statesProgress.hide();
+                },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                    alert('Failed to retrieve states.');
+                    statesProgress.hide();
+                }
+            });
+        });
+    });
+    </script>
+}
+<input asp-for="Id" type="hidden"/>
+<div class="edit-address border-block fieldset mb-3">
+    <div class="form-group">
+        <div class="row">
+            <div class="col col-md-6 mb-3">
+                <label asp-for="FirstName" asp-postfix="" class="label"></label>
+                <nop-required />
+                <input asp-for="FirstName" class="form-control" />
+                <span asp-validation-for="FirstName"></span>
+            </div>
+            <div class="col col-md-6 mb-3">
+                <label asp-for="LastName" asp-postfix="" class="label"></label>
+                <nop-required />
+                <input asp-for="LastName" class="form-control" />
+                <span asp-validation-for="LastName"></span>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            @if (Model.StreetAddressEnabled)
+            {
+            <div class="col col-12 col-md-6 mb-3">
+                <div class="row">
+                    <div class="col col-md-9 js-street-address1">
+                        <label asp-for="Address1" asp-postfix="" class="label"></label>
+                        @if (Model.StreetAddressRequired)
+                        {
+                            <nop-required />
+                        }
+                        <input asp-for="Address1" class="form-control" />
+                        <span asp-validation-for="Address1"></span>
+                    </div>
+                </div>
+                
+            </div>
+            }
+            @if (Model.CityEnabled)
+            {
+            <div class="col col-md-6 mb-3">
+                <label asp-for="City" asp-postfix="" class="label"></label>
+                @if (Model.CityRequired)
+                    {
+                        <nop-required />
+                    }
+                <input asp-for="City" class="form-control" />
+                <span asp-validation-for="City"></span>
+            </div>
+            }
+
+            @if (Model.CompanyEnabled)
+            {
+            <div class="col col-md-6 mb-3">
+                <label asp-for="Company" asp-postfix="" class="label"></label>
+                @if (Model.CompanyRequired)
+                    {
+                        <nop-required />
+                    }
+                <input asp-for="Company" class="form-control" />
+                <span asp-validation-for="Company"></span>
+            </div>
+            }
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+                @if (Model.ZipPostalCodeEnabled)
+                {
+                <div class="col col-md-6 mb-3">
+                    <label asp-for="ZipPostalCode" asp-postfix="" class="label"></label>
+                    @if (Model.ZipPostalCodeRequired)
+                        {
+                            <nop-required />
+                        }
+                    <input asp-for="ZipPostalCode" class="form-control" />
+                    <span asp-validation-for="ZipPostalCode"></span>
+                </div>
+                }
+                @if (Model.CountryEnabled)
+                {
+                <div class="col col-md-6 mb-3">
+                    <label asp-for="CountryId" asp-postfix="" class="label"></label>
+                    <nop-required />
+                    <select asp-for="CountryId" asp-items="Model.AvailableCountries" class="form-control"></select>
+                    <span asp-validation-for="CountryId"></span>
+                </div>
+                }
+        </div>
+    </div>
+    @if (Model.CountryEnabled && Model.StateProvinceEnabled)
+    {
+        <div class="form-group">
+                <label asp-for="StateProvinceId" asp-postfix="" class="label"></label>
+                <select asp-for="StateProvinceId" asp-items="Model.AvailableStates" class="form-control"></select>
+                <span id="states-loading-progress" style="display: none;" class="please-wait">@T("Common.Wait...")</span>
+                <span asp-validation-for="StateProvinceId"></span>
+        </div>
+    }
+    @*
+    <div class="form-group">
+        <div class="row">
+                @if (Model.StreetAddress2Enabled)
+                {
+                <div class="col col-md-6 mb-3 js-street-address2">
+                    <label asp-for="Address2" asp-postfix="" class="label"></label>
+                    @if (Model.StreetAddress2Required)
+                        {
+                            <nop-required />
+                        }
+                    <input asp-for="Address2" class="form-control" />
+                    <span asp-validation-for="Address2"></span>
+                </div>
+                }
+        </div>
+    </div>
+    *@
+    <div class="form-group">
+        <div class="row">
+                @if (Model.PhoneEnabled)
+                {
+                <div class="col col-md-6 mb-3">
+                    <label asp-for="PhoneNumber" asp-postfix="" class="label"></label>
+                    @if (Model.PhoneRequired)
+                        {
+                            <nop-required />
+                        }
+                    <input asp-for="PhoneNumber" class="form-control" />
+                    <span asp-validation-for="PhoneNumber"></span>
+                </div>
+                }
+            <div class="col col-md-6 mb-3">
+                <label asp-for="Email" asp-postfix="" class="label"></label>
+                <nop-required />
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email"></span>
+            </div>
+        </div>
+    </div>
+    @if (Model.FaxEnabled)
+    {
+    <div class="form-group">
+            <label asp-for="FaxNumber" asp-postfix="" class="label"></label>
+            @if (Model.FaxRequired)
+                {
+                    <nop-required />
+                }
+            <input asp-for="FaxNumber" class="form-control" />
+            <span asp-validation-for="FaxNumber"></span>
+    </div>
+    }
+    @if (Model.CustomAddressAttributes.Count > 0)
+    {
+        @await Html.PartialAsync("~/Plugins/Shipping.Core/Themes/Hajduk/Views/CustomShared/_AddressAttributes.cshtml", Model.CustomAddressAttributes)
+    }
+</div>

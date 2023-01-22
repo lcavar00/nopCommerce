@@ -1,0 +1,36 @@
+﻿CREATE TABLE [ShipmentRequest] (
+    [Id] int NOT NULL IDENTITY,
+    [ShipmentRequestGuid] uniqueidentifier NOT NULL,
+    [PackageReference] nvarchar(max) NULL,
+    [OrderId] int NOT NULL,
+    [OrderGuid] uniqueidentifier NOT NULL,
+    [ShipmentPickupAddressId] int NOT NULL,
+    [ShipmentCreated] bit NOT NULL,
+    [ShipmentId] int NULL,
+    [CreatedAt] datetime2 NULL,
+    [UpdatedAt] datetime2 NULL,
+    [ShippingProvider] nvarchar(max) NULL,
+    [ShippingProviderSystemName] nvarchar(max) NULL,
+    [NotificationSent] bit NOT NULL,
+    [IsDeleted] bit NOT NULL,
+    CONSTRAINT [PK_ShipmentRequest] PRIMARY KEY ([Id])
+);
+
+
+CREATE TABLE [ShippingByTotalByLocationRecord] (
+    [Id] int NOT NULL IDENTITY,
+    [StoreId] int NOT NULL,
+    [WarehouseId] int NOT NULL,
+    [CountryId] int NOT NULL,
+    [StateProvinceId] int NOT NULL,
+    [Zip] nvarchar(400) NULL,
+    [ShippingMethodId] int NOT NULL,
+    [OrderSubtotalFrom] decimal(18,2) NOT NULL,
+    [OrderSubtotalTo] decimal(18,2) NOT NULL,
+    [AdditionalFixedCost] decimal(18,2) NOT NULL,
+    [PercentageRateOfSubtotal] decimal(18,2) NOT NULL,
+    CONSTRAINT [PK_ShippingByTotalByLocationRecord] PRIMARY KEY ([Id])
+);
+
+
+

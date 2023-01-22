@@ -1,0 +1,38 @@
+﻿@using Nop.Plugin.Shipping.Core.Models
+@using Nop.Web.Framework.Models.DataTables
+<div class="card-group basic-setting">
+    <div class="card card-default">
+        <div class="card-body">
+            @await Html.PartialAsync("Table", new DataTablesModel
+            {
+                Name = "shipping-rate-grid",
+                UrlRead = new DataUrl("FixedShippingRateList", "DPDPlugin", null),
+                UrlUpdate = new DataUrl("UpdateFixedShippingRate", "DPDPlugin", null),
+                Length = Model.PageSize,
+                LengthMenu = Model.AvailablePageSizes,
+                ColumnCollection = new List<ColumnProperty>
+                {
+                    new ColumnProperty(nameof(FixedRateModel.ShippingMethodName))
+                    {
+                        Title = T("Plugins.Shipping.Core.Fields.ShippingMethod").Text,
+                        Width = "400"
+                    },
+                    new ColumnProperty(nameof(FixedRateModel.Rate))
+                    {
+                        Title = T("Plugins.Shipping.Core.Fields.Rate").Text,
+                        Width = "200",
+                        Editable = true,
+                        EditType = EditType.Number	 
+                    },
+                    new ColumnProperty(nameof(FixedRateModel.ShippingMethodId))
+                    {
+                        Title = T("Admin.Common.Edit").Text,
+                        Width = "200",
+                        ClassName =  NopColumnClassDefaults.Button,
+                        Render = new RenderButtonsInlineEdit()
+                    }
+                }
+            })
+        </div>
+    </div>
+</div>

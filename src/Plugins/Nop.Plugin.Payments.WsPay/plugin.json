@@ -1,0 +1,11 @@
+﻿{
+  "Group": "Payment methods",
+  "FriendlyName": "WsPay",
+  "SystemName": "Payments.WsPay",
+  "Version": "4.5",
+  "SupportedVersions": [ "4.50" ],
+  "Author": "sistemi.hr",
+  "DisplayOrder": 1,
+  "FileName": "Nop.Plugin.Payments.WsPay.dll",
+  "Description": "This plugin allows paying with WsPay"
+}

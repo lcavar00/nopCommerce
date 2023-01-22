@@ -1,0 +1,87 @@
+@model PriceModel
+
+@{
+    //page title
+    ViewBag.PageTitle = T("Admin.Catalog.Price.EditPriceDetails").Text;
+    //active menu item (system name)
+    Html.SetActiveMenuItemSystemName("Prices");
+}
+
+<form asp-controller="Price" asp-action="Edit" method="post" id="price-form">
+    <div class="content-header clearfix">
+        <h1 class="pull-left">
+            @T("Admin.Catalog.Prices.EditPriceDetails") - @Model.Name
+            <small>
+                <i class="fa fa-arrow-circle-left"></i>
+                <a asp-action="List">@T("Admin.Catalog.Prices.BackToList")</a>
+            </small>
+        </h1>
+        <div class="pull-right">
+            <button type="submit" name="save" class="btn bg-blue">
+                <i class="fa fa-floppy-o"></i>
+                @T("Admin.Common.Save")
+            </button>
+            <button type="submit" name="save-continue" class="btn bg-blue">
+                <i class="fa fa-floppy-o"></i>
+                @T("Admin.Common.SaveContinue")
+            </button>
+            <button type="button" name="copyprice" class="btn bg-olive" data-toggle="modal" data-target="#copyprice-window">
+                <i class="fa fa-clone"></i>
+                @T("Admin.Catalog.Prices.Copy")
+            </button>
+            <span id="price-delete" class="btn bg-red">
+                <i class="fa fa-trash-o"></i>
+                @T("Admin.Common.Delete")
+            </span>
+            @await Component.InvokeAsync("AdminWidget", new { widgetZone = AdminWidgetZonesExtension.PriceDetailsButtons, additionalData = Model })
+        </div>
+    </div>
+    @await Html.PartialAsync("_CreateOrUpdate", Model)
+</form>
+<nop-delete-confirmation asp-model-id="@Model.Id" asp-button-id="price-delete" />
+
+@if (!Model.IsLoggedInAsVendor)
+{
+    //price editor settings modal
+    @await Html.PartialAsync("_PriceEditorSettingsModal", Model)
+}
+
+@*copy price form*@
+<div id="copyprice-window" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="copyprice-window-title">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="copyprice-window-title">@T("Admin.Catalog.Prices.Copy")</h4>
+            </div>
+            <form asp-controller="Price" asp-action="CopyPrice" method="post">
+                <div class="form-horizontal">
+                    <div class="modal-body">
+                        <input asp-for="CopyPriceModel.Id" type="hidden" />
+                        <div class="form-group">
+                            <div class="col-md-4">
+                                <nop-label asp-for="CopyPriceModel.Name" />
+                            </div>
+                            <div class="col-md-8">
+                                <nop-editor asp-for="CopyPriceModel.Name" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-4">
+                                <nop-label asp-for="CopyPriceModel.Published" />
+                            </div>
+                            <div class="col-md-8">
+                                <nop-editor asp-for="CopyPriceModel.Published" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">
+                            @T("Admin.Catalog.Price.Copy")
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

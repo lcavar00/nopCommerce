@@ -1,0 +1,18 @@
+﻿@model GalleryModel
+@{
+    Html.AddScriptParts(ResourceLocation.Footer, "~/lib_npm/magnific-popup/jquery.magnific-popup.min.js");
+    Html.AddCssFileParts("~/lib_npm/magnific-popup/magnific-popup.css");
+}
+<div class="gallery">
+    @*@await Component.InvokeAsync("Widget", new { widgetZone = PublicWidgetZones.ProductDetailsBeforePictures, additionalData = Model })*@
+
+    @foreach (var pics in Model.Pictures.OrderBy(a => a.Key))
+    {
+        var picture = pics.Value;
+        <div class="picture">
+            <img alt="@picture.AlternateText" src="@picture.ImageUrl" title="@picture.Title" id="gallery-@Model.Id" />
+        </div>
+    }
+
+    @*@await Component.InvokeAsync("Widget", new { widgetZone = PublicWidgetZones.ProductDetailsAfterPictures, additionalData = Model })*@
+</div>

@@ -1,0 +1,11 @@
+﻿{
+  "Group": "Misc",
+  "FriendlyName": "More Prices",
+  "SystemName": "Misc.MorePrices",
+  "Version": "1.0",
+  "SupportedVersions": [ "4.60" ],
+  "Author": "Luka Ćavar",
+  "DisplayOrder": 5,
+  "FileName": "Nop.Plugin.Misc.MorePrices.dll",
+  "Description": "This plugin allows adding more prices to products with conditions on which the prices will be used"
+}

@@ -1,0 +1,215 @@
+﻿@model PriceModel
+
+@inject IStoreService storeService
+
+@using Nop.Core.Domain.Catalog;
+@using Nop.Services
+@using Nop.Services.Stores
+
+@{
+    var stores = storeService.GetAllStores();
+
+    //resources for price tags input
+    Html.AppendCssFileParts("~/lib/tagEditor/jquery.tag-editor.css");
+    Html.AppendScriptParts("~/lib/tagEditor/jquery.tag-editor.min.js");
+    Html.AppendScriptParts("~/lib/tagEditor/jquery.caret.min.js");
+}
+
+<script>
+    $(document).ready(function() {
+        
+    });
+
+</script>
+
+<div class="panel-body">
+    @(Html.LocalizedEditor<PriceModel, PriceLocalizedModel>("price-info-localized",
+        @<div>
+            <div class="form-group">
+               <div class="col-md-3">
+                   <nop-label asp-for="@Model.Locales[item].Name" />
+               </div>
+               <div class="col-md-9">
+                   <nop-editor asp-for="@Model.Locales[item].Name" />
+                   <span asp-validation-for="@Model.Locales[item].Name"></span>
+               </div>
+            </div>
+            <input type="hidden" asp-for="@Model.Locales[item].LanguageId" />
+        </div>
+        ,
+        @<div>
+            <div class="form-group">
+               <div class="col-md-3">
+                   <nop-label asp-for="Name" />
+               </div>
+               <div class="col-md-9">
+                   <nop-editor asp-for="Name" asp-required="true" />
+                   <span asp-validation-for="Name"></span>
+               </div>
+            </div>
+         </div>))
+
+    <div class="form-group">
+        
+    </div>
+    <div class="form-group">
+        <div class="col-md-3">
+            <nop-label asp-for="SelectedCategoryIds" />
+        </div>
+        <div class="col-md-9">
+            <nop-select asp-for="SelectedCategoryIds" asp-items="Model.AvailableCategories" asp-multiple="true" />
+            <script>
+                $(document).ready(function() {
+                    var categoryIdsInput = $('#@Html.IdFor(model => model.SelectedCategoryIds)').data("kendoMultiSelect");
+                    categoryIdsInput.setOptions({
+                        autoClose: false,
+                        filter: "contains"
+                    });
+
+                    @if (Model.AvailableCategories.Count == 0)
+                    {
+                        <text>
+                            categoryIdsInput.setOptions({
+                                enable: false,
+                                placeholder: '@T("Admin.Catalog.Prices.Fields.Categories.NoCategoriesAvailable")'
+                            });
+                            categoryIdsInput._placeholder();
+                            categoryIdsInput._enable();
+                        </text>
+                    }
+                });
+            </script>
+        </div>
+    </div>
+    <div class="form-group @(Model.PriceEditorSettingsModel.Manufacturers ? null : "advanced-setting")">
+        <div class="col-md-3">
+            <nop-label asp-for="SelectedManufacturerIds" />
+        </div>
+        <div class="col-md-9">
+            <nop-select asp-for="SelectedManufacturerIds" asp-items="Model.AvailableManufacturers" asp-multiple="true" />
+            <script>
+                $(document).ready(function() {
+                    var manufacturersIdsInput = $('#@Html.IdFor(model => model.SelectedManufacturerIds)').data("kendoMultiSelect");
+                    manufacturersIdsInput.setOptions({
+                        autoClose: false,
+                        filter: "contains"
+                    });
+
+                    @if (Model.AvailableManufacturers.Count == 0)
+                    {
+                        <text>
+                            manufacturersIdsInput.setOptions({
+                                enable: false,
+                                placeholder: '@T("Admin.Catalog.Prices.Fields.Manufacturers.NoManufacturersAvailable")'
+                            });
+                            manufacturersIdsInput._placeholder();
+                            manufacturersIdsInput._enable();
+                         </text>
+                    }
+                });
+            </script>
+        </div>
+    </div>
+    <div class="form-group @(Model.PriceEditorSettingsModel.Published ? null : "advanced-setting")">
+        <div class="col-md-3">
+            <nop-label asp-for="Published" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="Published" />
+            <span asp-validation-for="Published"></span>
+        </div>
+    </div>
+    
+    <div class="form-group @(Model.PriceEditorSettingsModel.ACL ? null : "advanced-setting")">
+        <div class="col-md-3">
+            <nop-label asp-for="SelectedCustomerRoleIds" />
+        </div>
+        <div class="col-md-9">
+            <div class="row">
+                <div class="col-md-4">
+                    <nop-select asp-for="SelectedCustomerRoleIds" asp-items="Model.AvailableCustomerRoles" asp-multiple="true"/>
+                    <script>
+                        $(document).ready(function() {
+                            var rolesIdsInput = $('#@Html.IdFor(model => model.SelectedCustomerRoleIds)')
+                                .data("kendoMultiSelect");
+                            rolesIdsInput.setOptions({
+                                autoClose: false,
+                                filter: "contains"
+                            });
+
+                            @if (Model.AvailableCustomerRoles.Count == 0)
+                            {
+                                <text>
+                                    rolesIdsInput.setOptions({
+                                        enable: false,
+                                        placeholder: 'No customer roles available'
+                                    });
+                                    rolesIdsInput._placeholder();
+                                    rolesIdsInput._enable();
+                                </text>
+                            }
+                        });
+                    </script>
+                </div>
+                <div class="col-md-8">
+                    @await Component.InvokeAsync("AclDisabledWarning")
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group @(Model.PriceEditorSettingsModel.Stores ? null : "advanced-setting")">
+        <div class="col-md-3">
+            <nop-label asp-for="SelectedStoreIds" />
+        </div>
+        <div class="col-md-9">
+            <div class="row">
+                <div class="col-md-4">
+                    <nop-select asp-for="SelectedStoreIds" asp-items="Model.AvailableStores" asp-multiple="true" />
+                    <script>
+                        $(document).ready(function() {
+                            var storesIdsInput = $('#@Html.IdFor(model => model.SelectedStoreIds)').data("kendoMultiSelect");
+                            storesIdsInput.setOptions({
+                                autoClose: false,
+                                filter: "contains"
+                            });
+
+                            @if (Model.AvailableStores.Count == 0)
+                            {
+                                <text>
+                                    storesIdsInput.setOptions({
+                                        enable: false,
+                                        placeholder: 'No stores available'
+                                    });
+                                    storesIdsInput._placeholder();
+                                    storesIdsInput._enable();
+                                </text>
+                            }
+                        });
+                    </script>
+                </div>
+                <div class="col-md-8">
+                    @await Component.InvokeAsync("MultistoreDisabledWarning")
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group @(Model.PriceEditorSettingsModel.Vendor ? null : "advanced-setting")" @(Model.IsLoggedInAsVendor ? Html.Raw("style='display: none;'") : null)>
+        <div class="col-md-3">
+            <nop-label asp-for="VendorId" />
+        </div>
+        <div class="col-md-9">
+            <nop-select asp-for="VendorId" asp-items="Model.AvailableVendors" />
+            <span asp-validation-for="VendorId"></span>
+        </div>
+    </div>
+    <div class="form-group @(Model.PriceEditorSettingsModel.AdminComment ? null : "advanced-setting")">
+        <div class="col-md-3">
+            <nop-label asp-for="AdminComment" />
+        </div>
+        <div class="col-md-9">
+            <nop-textarea asp-for="AdminComment" />
+            <span asp-validation-for="AdminComment"></span>
+        </div>
+    </div>
+</div>         
+          

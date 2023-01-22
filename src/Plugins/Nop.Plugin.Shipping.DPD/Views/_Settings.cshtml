@@ -1,0 +1,83 @@
+﻿@model Nop.Plugin.Shipping.DPD.DPDSettings
+
+<form asp-controller="DPDPlugin" asp-action="SaveSetting" method="post">
+    <div class="card-group">
+        <div class="card card-default">
+            <div class="card-body">
+                <div class="form-group row">
+                    <div class="col-md-6">
+                        <label>
+                            @T("Plugins.Shipping.DPD.Admin.Configure.UseSandbox")
+                        </label>
+                        <nop-editor asp-for="@Model.UseSandbox" />
+                        <span asp-validation-for="@Model.UseSandbox"></span>
+                    </div>
+                </div>
+                <h3>Production settings</h3>
+                <div class="form-group row">
+                    <div class="col-md-6">
+                        <label>
+                            @T("Plugins.Shipping.DPD.Admin.Configure.ProductionUri")
+                        </label>
+                        <nop-editor asp-for="@Model.WebServiceUrl" />
+                        <span asp-validation-for="@Model.WebServiceUrl"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-6">
+                        <label>
+                            @T("Plugins.Shipping.DPD.Admin.Configure.ProductionUsername")
+                        </label>
+                        <nop-editor asp-for="@Model.Username" />
+                        <span asp-validation-for="@Model.Username"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-6">
+                        <label>
+                            @T("Plugins.Shipping.DPD.Admin.Configure.ProductionPassword")
+                        </label>
+                        <nop-editor asp-for="@Model.Password" />
+                        <span asp-validation-for="@Model.Password"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-6">
+                        <label>
+                            @T("Plugins.Shipping.DPD.Admin.Configure.TestUri")
+                        </label>
+                        <nop-editor asp-for="@Model.TestWebServiceUrl" />
+                        <span asp-validation-for="@Model.TestWebServiceUrl"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-6">
+                        <label>
+                            @T("Plugins.Shipping.DPD.Admin.Configure.TestUsername")
+                        </label>
+                        <nop-editor asp-for="@Model.TestUsername" />
+                        <span asp-validation-for="@Model.TestUsername"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-6">
+                        <label>
+                            @T("Plugins.Shipping.DPD.Admin.Configure.TestPassword")
+                        </label>
+                        <nop-editor asp-for="@Model.TestPassword" />
+                        <span asp-validation-for="@Model.TestPassword"></span>
+                    </div>
+                </div>
+                <br />
+                <div class="form-group row">
+                    <div class="col-md-3">
+                        &nbsp;
+                    </div>
+                    <div class="col-md-9">
+                        <input type="submit" name="save" class="btn bg-blue" value="@T("Admin.Common.Save")" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

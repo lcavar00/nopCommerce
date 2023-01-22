@@ -1,0 +1,119 @@
+﻿@model IList<AddressAttributeModel>
+@using Nop.Core.Domain.Catalog;
+@using System.Text.RegularExpressions
+@inject Nop.Services.Localization.ILocalizationService localizationService
+@inject Nop.Core.IWorkContext workContext
+@foreach (var attribute in Model)
+{
+    var languageId = workContext.WorkingLanguage.Id;
+    var controlId = $"address_attribute_{attribute.Id}";
+    var controlClass = $"js-address_attribute_{attribute.Name.ToLower().Replace(" ", string.Empty)}";
+    controlClass = Regex.Replace(controlClass, @"[^\u0000-\u007F]+", string.Empty);
+    var textPrompt = attribute.Name;
+
+<div class="col col-12 col-md-3 mb-3 form-group custom-attributes @controlClass">
+    <label class="label">@textPrompt</label>
+    @if (attribute.IsRequired)
+    {
+        <nop-required />
+    }
+    @switch (attribute.AttributeControlType)
+    {
+        case AttributeControlType.DropdownList:
+            {
+                <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
+                    <select name="@(controlId)" id="@(controlId)" class="form-control">
+                        @if (!attribute.IsRequired)
+                        {
+                            <option value="0">---</option>
+                        }
+                        @foreach (var attributeValue in attribute.Values)
+                        {
+                            <option selected="@attributeValue.IsPreSelected" value="@attributeValue.Id">@attributeValue.Name</option>
+                        }
+                    </select>
+                </div>
+            }
+            break;
+        case AttributeControlType.RadioList:
+            {
+                <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
+                    <ul class="option-list">
+                        @foreach (var attributeValue in attribute.Values)
+                        {
+                            <li>
+                                <div class="custom-control custom-radio" for="@(controlId)_@(attributeValue.Id)">
+                                    <input class="custom-control-input" id="@(controlId)_@(attributeValue.Id)" type="radio" name="@(controlId)" value="@attributeValue.Id" checked="@attributeValue.IsPreSelected" />
+                                    <label class="custom-control-label" for="@(controlId)_@(attributeValue.Id)">@attributeValue.Name</label>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+            break;
+        case AttributeControlType.Checkboxes:
+        case AttributeControlType.ReadonlyCheckboxes:
+            {
+                <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
+                    <ul class="option-list">
+                        @foreach (var attributeValue in attribute.Values)
+                        {
+                            <li>
+                                <div class="custom-control custom-checkbox" for="@(controlId)_@(attributeValue.Id)">
+                                    <input class="custom-control-input" id="@(controlId)_@(attributeValue.Id)" type="checkbox" name="@(controlId)" value="@attributeValue.Id" checked="@attributeValue.IsPreSelected" @(attribute.AttributeControlType == AttributeControlType.ReadonlyCheckboxes ? Html.Raw(" disabled=\"disabled\"") : null) />
+                                    <label class="custom-control-label" for="@(controlId)_@(attributeValue.Id)">@attributeValue.Name</label>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+            break;
+        case AttributeControlType.TextBox:
+            {
+                <input name="@(controlId)" type="text" class="textbox form-control" id="@(controlId)" value="@attribute.DefaultValue" />
+            }
+            break;
+        case AttributeControlType.MultilineTextbox:
+            {
+                <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
+                    <textarea id="@(controlId)" rows="5" class="form-control" name="@(controlId)">@attribute.DefaultValue</textarea>
+                </div>
+            }
+            break;
+        case AttributeControlType.Datepicker:
+        case AttributeControlType.FileUpload:
+        case AttributeControlType.ColorSquares:
+        case AttributeControlType.ImageSquares:
+            {
+                //not support attribute type
+            }
+            break;
+    }
+</div>
+    @if (controlClass.ToLower().Contains("broj") || controlClass.ToLower().Contains("number"))
+    {
+        <script>
+            (function () {
+                var className = ".@controlClass";
+                //className = className.replace(/[^\x00-\x7F]/g, "");
+                var houseNumberDiv = document.querySelector(className);
+                console.log(houseNumberDiv);
+                if (houseNumberDiv != null && houseNumberDiv.length != 0 && houseNumberDiv != "undefined") {
+                    document.querySelector(".@controlClass").remove();
+
+                    var streetAddressDiv = document.querySelector(".js-street-address1");
+                    console.log(streetAddressDiv);
+                    if (className.includes("2"))
+                        streetAddressDiv = document.querySelector(".js-street-address2");
+                    streetAddressDiv.parentNode.insertBefore(houseNumberDiv, streetAddressDiv.nextSibling);
+
+                    if (streetAddressDiv.getAttribute("style") == "display: none;" || streetAddressDiv == null || streetAddressDiv == "undefined" || streetAddressDiv.length == 0) {
+                        houseNumberDiv.remove();
+                    }
+                }
+            })();
+        </script>
+    }
+}

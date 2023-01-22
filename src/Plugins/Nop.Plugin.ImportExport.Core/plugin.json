@@ -1,0 +1,11 @@
+﻿{
+  "Group": "ImportExport",
+  "FriendlyName": "Import Export core",
+  "SystemName": "ImportExport.Core",
+  "Version": "1.0",
+  "SupportedVersions": [ "4.50" ],
+  "Author": "sistemi.hr",
+  "DisplayOrder": 1,
+  "FileName": "Nop.Plugin.ImportExport.Core.dll",
+  "Description": "Plugin made to syncronise a foreign database with the NopCommerce database"
+}

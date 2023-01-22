@@ -1,0 +1,11 @@
+﻿{
+  "Group": "Misc",
+  "FriendlyName": "Lowest price (in a timespan)",
+  "SystemName": "Misc.LowestPrice",
+  "Version": "1.0",
+  "SupportedVersions": [ "4.50" ],
+  "Author": "luka cavar",
+  "DisplayOrder": 0,
+  "FileName": "Nop.Plugin.Misc.LowestPrice.dll",
+  "Description": "This plugin allows setting a component to display the lowest price of a product in a set timespan"
+}

@@ -1,0 +1,137 @@
+﻿@model GalleryContentModel
+
+@{
+    //page title
+    ViewBag.PageTitle = T("Admin.ContentManagement.Galleries").Text;
+    //active menu item (system name)
+    Html.SetActiveMenuItemSystemName("Galleries");
+}
+
+@{
+    const string hideSearchBlockAttributeName = "GalleriesPage.HideSearchBlock";
+    var hideSearchBlock = await genericAttributeService.GetAttributeAsync<bool>(await workContext.GetCurrentCustomerAsync(), hideSearchBlockAttributeName);
+}
+
+
+<div class="content-header clearfix">
+    <h1 class="float-left">
+        @T("Admin.ContentManagement.Galleries")
+    </h1>
+    <div class="float-right">
+        <a asp-action="GalleryCreate" class="btn btn-primary">
+            <i class="fas fa-plus-square"></i>
+            @T("Admin.Common.AddNew")
+        </a>
+        @await Component.InvokeAsync("AdminWidget", new { widgetZone = AdminWidgetZonesExtension.GalleryListButtons })
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="form-horizontal">
+            <div class="form-horizontal">
+                <div class="cards-group">
+
+                    @*hide the entire search block if no elements are displayed*@
+                    <div class="card card-default card-search">
+                        <div class="card-body">
+                            <div class="row search-row @(!hideSearchBlock ? "opened" : "")" data-hideAttribute="@hideSearchBlockAttributeName">
+                                <div class="search-text">@T("Admin.Common.Search")</div>
+                                <div class="icon-search"><i class="fas fa-search" aria-hidden="true"></i></div>
+                                <div class="icon-collapse"><i class="far fa-angle-@(!hideSearchBlock ? "up" : "down")" aria-hidden="true"></i></div>
+                            </div>
+
+                            <div class="search-body @(hideSearchBlock ? "closed" : "")">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group row" @(Model.Galleries.HideStoresList ? Html.Raw("style=\"display:none\"") : null)>
+                                            <div class="col-md-4">
+                                                <nop-label asp-for="Galleries.SearchStoreId" />
+                                            </div>
+                                            <div class="col-md-8">
+                                                <nop-select asp-for="Galleries.SearchStoreId" asp-items="Model.Galleries.AvailableStores" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-md-4">
+                                                <nop-label asp-for="SearchTitle" />
+                                            </div>
+                                            <div class="col-md-8">
+                                                <nop-editor asp-for="SearchTitle" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-md-4">
+                                                <nop-label asp-for="SearchSystemName" />
+                                            </div>
+                                            <div class="col-md-8">
+                                                <nop-editor asp-for="SearchSystemName" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-8 offset-md-4">
+                                        <button type="button" id="search-gallery" class="btn btn-primary btn-search">
+                                            <i class="fas fa-search"></i>
+                                            @T("Admin.Common.Search")
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card card-default">
+                        <div class="card-body">
+                            @await Html.PartialAsync("Table", new DataTablesModel
+                            {
+                                Name = "gallery-grid",
+                                UrlRead = new DataUrl("List", "Gallery", null),
+                                SearchButtonId = "search-gallery",
+                                Length = Model.Galleries.PageSize,
+                                LengthMenu = Model.Galleries.AvailablePageSizes,
+                                Filters = new List<FilterParameter>
+                                {
+                                    new FilterParameter(nameof(Model.Galleries.SearchStoreId), nameof(Model.Galleries)),
+                                    new FilterParameter(nameof(Model.SearchTitle))
+                                },
+                                ColumnCollection = new List<ColumnProperty>
+                                {
+                                    new ColumnProperty(nameof(GalleryModel.Title))
+                                    {
+                                        Title = T("Admin.ContentManagement.Galleries.Fields.Title").Text,
+                                        Width = "400"
+                                    },
+                                    new ColumnProperty(nameof(GalleryModel.SystemName))
+                                    {
+                                        Title = T("Admin.ContentManagement.Galleries.Fields.Title").Text,
+                                        Width = "400"
+                                    },
+                                    new ColumnProperty(nameof(GalleryModel.LanguageName))
+                                    {
+                                        Title = T("Admin.ContentManagement.Galleries.Fields.Language").Text,
+                                        Width = "150"
+                                    },
+                                    new ColumnProperty(nameof(GalleryModel.CreatedOnUtc))
+                                    {
+                                        Title = T("Admin.ContentManagement.Galleries.Fields.CreatedOn").Text,
+                                        Width = "200",
+                                        Render = new RenderDate()
+                                    },
+                                    new ColumnProperty(nameof(GalleryModel.Id))
+                                    {
+                                        Title = T("Admin.Common.Edit").Text,
+                                        Width = "100",
+                                        ClassName = NopColumnClassDefaults.Button,
+                                        Render = new RenderButtonEdit(new DataUrl("GalleryPostEdit"))
+                                    }
+                                }
+                            })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

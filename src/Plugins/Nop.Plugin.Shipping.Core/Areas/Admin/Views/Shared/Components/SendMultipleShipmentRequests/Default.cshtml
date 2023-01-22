@@ -1,0 +1,48 @@
+﻿<button type="button" class="btn btn-info" id="send-multiple-shipment-requests">
+    <i class="fas fa-download"></i>
+    @T("Admin.Orders.SendShipmentRequests")
+</button>
+
+<script>
+    const formHtml = '<form method="post" id="send-multiple-shipment-requests-form" action="/Admin/OrderShipping/SendMultipleShipmentRequests"><input type="hidden" id="selectedIds" name="selectedIds" value="" /></form>'
+
+    function appendHtml(el, str) {
+        var div = document.createElement('div');
+        div.innerHTML = str;
+        while (div.children.length > 0) {
+            el.appendChild(div.children[0]);
+        }
+    }
+
+    function copyRequestVerificationToken(){
+        var token = document.querySelector('input[name="__RequestVerificationToken"]');
+        var form = document.getElementById('send-multiple-shipment-requests-form');
+
+        var tokenClone = token.cloneNode();
+        form.appendChild(tokenClone);
+    }   
+
+    var invoiceForm = document.querySelector('.content-wrapper');
+    appendHtml(invoiceForm, formHtml);
+    copyRequestVerificationToken();
+    
+
+    $(document).ready(function () {
+        $('#send-multiple-shipment-requests').click(function (e) {
+            e.preventDefault();
+            var ids = selectedIds.join(",");
+
+           if (!ids) {
+                $('#sendMultipleShipmentRequests-info').text("@T("Admin.Orders.NoOrders")");
+                $("#sendMultipleShipmentRequests").click();
+            }
+            else {
+                $('#send-multiple-shipment-requests-form #selectedIds').val(ids);
+                $('#send-multiple-shipment-requests-form').submit();
+                updateTable('#orders-grid');
+            }
+            return false;
+        });
+    });
+</script>
+<nop-alert asp-alert-id="sendMultipleShipmentRequests" />

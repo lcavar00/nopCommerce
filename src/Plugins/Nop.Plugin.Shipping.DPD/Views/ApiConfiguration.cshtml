@@ -1,0 +1,6 @@
+﻿@model Nop.Plugin.Shipping.DPD.DPDSettings
+@{
+    Layout = "_ConfigurePlugin";
+}
+<nop-card asp-name="DPD-webservicesettings" asp-icon="fa fa-info" asp-title="@T("Plugins.Shipping.DPD.Admin.Configure.Title")" asp-hide-block-attribute-name="DPDSettingsPage.HideWebServiceSettingsBlock" asp-hide="false" asp-advanced="false">@await Html.PartialAsync("~/Plugins/Shipping.DPD/Views/_Settings.cshtml", Model)</nop-card>
+

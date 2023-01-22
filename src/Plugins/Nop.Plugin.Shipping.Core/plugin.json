@@ -1,0 +1,11 @@
+﻿{
+  "Group": "Shipping",
+  "FriendlyName": "Shipping providers core",
+  "SystemName": "Shipping.Core",
+  "Version": "1.0",
+  "SupportedVersions": [ "4.50" ],
+  "Author": "sistemi.hr",
+  "DisplayOrder": 1,
+  "FileName": "Nop.Plugin.Shipping.Core.dll",
+  "Description": "This plugin allows choosing shipping providers for orders"
+}

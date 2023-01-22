@@ -1,0 +1,12 @@
+﻿{
+  "Group": "Shipping providers",
+  "FriendlyName": "DPD Shipping provider",
+  "SystemName": "Shipping.DPD",
+  "Version": "1.00",
+  "SupportedVersions": [ "4.50" ],
+  "DependsOnSystemNames": [ "Shipping.Core" ],
+  "Author": "sistemi.hr",
+  "DisplayOrder": 1,
+  "FileName": "Nop.Plugin.Shipping.DPD.dll",
+  "Description": "This plugin offers selecting DPD shipping provider"
+}

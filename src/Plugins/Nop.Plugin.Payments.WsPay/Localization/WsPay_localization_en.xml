@@ -1,0 +1,134 @@
+<Localization>
+  <LocaleResource Name="Plugins.Payments.WsPay.Fields.AdditionalFee">
+    <Value>Additional fee</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.WsPay.Fields.AdditionalFee.Hint">
+    <Value>Enter additional fee to charge your customers.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.WsPay.Fields.AdditionalFeePercentage">
+    <Value>Additional fee. Use percentage</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.WsPay.Fields.AdditionalFeePercentage.Hint">
+    <Value>Determines whether to apply a percentage additional fee to the order total. If not enabled, a fixed value is used.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.WsPay.Fields.AddressOverride">
+    <Value>Address override</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.WsPay.Fields.AddressOverride.Hint">
+    <Value>For people who already have WsPay accounts and whom you already prompted for a shipping address before they choose to pay with WsPay, you can use the entered address instead of the address the person has stored with WsPay.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.WsPay.Fields.BusinessEmail">
+    <Value>Business Email</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.WsPay.Fields.BusinessEmail.Hint">
+    <Value>Specify your WsPay business email.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.WsPay.Fields.EnableIpn">
+    <Value>Enable IPN (Instant Payment Notification)</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.WsPay.Fields.EnableIpn.Hint">
+    <Value>Check if IPN is enabled.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.WsPay.Fields.EnableIpn.Hint2">
+    <Value>Leave blank to use the default IPN handler URL.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.WsPay.Fields.PassProductNamesAndTotals">
+    <Value>Pass product names and order totals to HT WsPay</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.WsPay.Fields.PassProductNamesAndTotals.Hint">
+    <Value>Check if product names and order totals should be passed to HT  WsPay.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.WsPay.Fields.PaymentUrl">
+    <Value>PaymentUrl</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.WsPay.Fields.PaymentUrl.Hint">
+    <Value>Payment Gateway url</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.WsPay.Fields.PaymentUrlTest">
+    <Value>PaymentUrl Test</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.WsPay.Fields.PaymentUrlTest.Hint">
+    <Value>Payment Gateway url (testing environment).</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.WsPay.Fields.RedirectionTip">
+    <Value>Credit card payments or PayPal payments are authorized by WSpay payment checkout.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.WsPay.Fields.ReturnFromWsPayWithoutPaymentRedirectsToOrderDetailsPage">
+    <Value>Return to order details page</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.WsPay.Fields.ReturnFromWsPayWithoutPaymentRedirectsToOrderDetailsPage.Hint">
+    <Value>Enable if a customer should be redirected to the order details page when he clicks "return to store" link on WsPay site WITHOUT completing a payment</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.WsPay.Fields.SecretKey">
+    <Value>SecretKey</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.WsPay.Fields.SecretKey.Hint">
+    <Value>SecretKey (testing environment).</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.WsPay.Fields.SecretKeyTest">
+    <Value>SecretKey Test</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.WsPay.Fields.SecretKeyTest.Hint">
+    <Value>SecretKey (testing environment).</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.WsPay.Fields.ShopId">
+    <Value>ShopId</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.WsPay.Fields.ShopId.Hint">
+    <Value>ShopId</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.WsPay.Fields.ShopIdTest">
+    <Value>ShopId Test</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.WsPay.Fields.ShopIdTest.Hint">
+    <Value>ShopId (testing environment).</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.WsPay.Fields.UseSandbox">
+    <Value>Use Sandbox</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.WsPay.Fields.UseSandbox.Hint">
+    <Value>Check to enable Sandbox (testing environment).</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.WsPay.Instructions">
+    <Value>&lt;p&gt;&lt;b&gt;WsPay&lt;/b&gt;&lt;/p&gt;</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.WsPay.JavascriptIsTurnOn">
+    <Value>If your browser does not have JavaScript enabled, click on PAYMENT button.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.WsPay.PaymentMethodDescription">
+    <Value>Credit cards or Paypal</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.WsPay.PaySubmitButton">
+    <Value>Payment</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.WsPay.PleaseWait">
+    <Value>Please wait for authorization to process ... </Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.WsPay.RoundingWarning">
+    <Value>It looks like you have "ShoppingCartSettings.RoundPricesDuringCalculation" setting disabled. Keep in mind that this can lead to a discrepancy of the order total amount, as WsPay only rounds to two decimals.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.WsPay.Checkout.UseRatePayment">
+    <Value>Rate payment</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.WsPay.Checkout.Card">
+    <Value>Credit card: </Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.WsPay.Checkout.Bank">
+    <Value>Bank: </Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.WsPay.Checkout.Rates">
+    <Value>Rates: </Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.WsPay.Checkout.MaxRates">
+    <Value>Max: </Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.WsPay.Checkout.CallbackUrl">
+    <Value>WsPay callback URL</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.WsPay.PaymentCancelledWarning">
+    <Value>Warning: payment was cancelled</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.WsPay.PaymentTimeoutWarning">
+    <Value>Warning: payment was cancelled due to server timeout</Value>
+  </LocaleResource>
+</Localization>

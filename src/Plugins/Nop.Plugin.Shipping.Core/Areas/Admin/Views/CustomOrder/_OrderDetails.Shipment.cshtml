@@ -1,0 +1,168 @@
+﻿@model Nop.Plugin.Shipping.Core.Models.ShipmentRequestModel
+
+@inject Nop.Plugin.Shipping.Core.Services.IShippingMethodPluginManager shippingMethodPluginManager
+@inject Nop.Plugin.Shipping.Core.Factories.IShippingAddressModelFactory shippingAddressModelFactory
+@inject Nop.Plugin.Shipping.Core.Services.IShipmentRequestService shippingRequestService
+<div class="mb-4">
+    @if (Model.Id == 0)
+    {
+        var availableShippingMethods = await shippingMethodPluginManager.LoadActivePluginsAsync(await
+        workContext.GetCurrentCustomerAsync());
+        var availableAddresses = await shippingAddressModelFactory.PrepareAddressesAsync();
+
+        <div class="row">
+            <script>
+                $('document').ready(function () {
+
+                    $('.js-send-shipping-request').click(function () {
+
+                        var methodInput = $('.js-shipping-method');
+                        var methodSystemName = null;
+
+                        if ($('#chkbxEditShippingProvider').is(":checked")) {
+                            methodInput = $('.js-shipping-method-dropdown');
+                        }
+
+                        if (methodInput == null || methodInput == 'undefined' || methodInput.length == 0) {
+                            methodSystemName = $('select[name="ShippingMethod"]').val();
+                        }
+                        else {
+                            methodSystemName = methodInput.val();
+                        }
+
+                        var addressId = $('select[name="Address"]').val();
+                        if (addressId == null || addressId == 'undefined') {
+                            addressId = 0;
+                        }
+
+                        var data = {
+                            OrderId: @Model.OrderId,
+                            AddressId: addressId,
+                            ShippingMethod: methodSystemName
+                        };
+
+                        console.log(data);
+
+                        $.ajax({
+                            url: '/Admin/OrderShipping/SendShippingRequest',
+                            type: 'POST',
+                            data: JSON.stringify(data),
+                            contentType: 'application/json',
+                            success: function (response) {
+                                location.reload();
+                            },
+                            error: function (response) {
+                                alert(response.responseText);
+                            }
+                        });
+                    });
+                });
+
+            </script>
+
+            <div class="col-md-6">
+                @Html.DropDownList("Address",
+            availableAddresses.Select(address =>
+            new SelectListItem()
+            {
+            Value = address.Key.ToString(),
+            Text = address.Value,
+            }),
+            null,
+            new { @class = "form-control js-shipping-address" }
+            )
+            </div>
+            <script>
+                $(document).ready(function () {
+                    $('#chkbxEditShippingProvider').prop("checked", false);
+                    $('#inputShippingProvider').hide();
+                    $('#divSelectedShippingProvider').show();
+                });
+
+                function toggleEditShippingProvider(chkbx) {
+                    if ($(chkbx).is(":checked")) {
+                        $('#inputShippingProvider').show();
+                        $('#divSelectedShippingProvider').hide();
+                    } else {
+                        $('#inputShippingProvider').hide();
+                        $('#divSelectedShippingProvider').show();
+                    }
+                }
+            </script>
+            @if (string.IsNullOrEmpty(Model.Order.ShippingMethod))
+            {
+                <div class="col-md-6">
+                    @Html.DropDownList("ShippingMethod",
+            availableShippingMethods.Select(method =>
+            new SelectListItem()
+            {
+            Value = method.PluginDescriptor.SystemName,
+            Text = method.PluginDescriptor.FriendlyName,
+            }),
+            null,
+            new { @class = "form-control js-shipping-method-dropdown" })
+                </div>
+            }
+            else
+            {
+                var shippingMethod = availableShippingMethods.FirstOrDefault(a => a.PluginDescriptor.SystemName ==
+                Model.Order.ShippingMethod) ??
+                availableShippingMethods.FirstOrDefault(a => a.PluginDescriptor.SystemName ==
+                Model.Order.ShippingRateComputationMethodSystemName);
+                if (shippingMethod != null)
+                {
+                    <div class="col-md-6" id="divSelectedShippingProvider">
+                        <input type="hidden" class="js-shipping-method" name="shippingMethod"
+                value="@shippingMethod.PluginDescriptor.SystemName" />
+                        <label>
+                            @shippingMethod.PluginDescriptor.FriendlyName
+                        </label>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-md-6" id="divSelectedShippingProvider">
+                        <label>
+                            @Model.Order.ShippingMethod
+                        </label>
+                    </div>
+                }
+
+                <div class="col-md-6" id="inputShippingProvider">
+                    @Html.DropDownList("ShippingMethod",
+            availableShippingMethods.Select(method =>
+            new SelectListItem()
+            {
+            Value = method.PluginDescriptor.SystemName,
+            Text = method.PluginDescriptor.FriendlyName,
+            }),
+            null,
+            new { @class = "form-control js-shipping-method-dropdown" })
+                </div>
+            }
+        </div>
+        <div class="col-md-6">
+            <input type="checkbox" onclick="toggleEditShippingProvider(this)" id="chkbxEditShippingProvider" />
+            <label>@T("Admin.Common.Edit")</label>
+        </div>
+        <div class="col-md-9">
+            <button type="button" class="btn btn-primary js-send-shipping-request">
+                @T("Plugins.Shipping.Core.SendShippingRequest")
+            </button>
+        </div>
+    }
+    else
+    {
+
+        <a class=" btn btn-primary" asp-controller="OrderShipping" asp-action="CancelShipmentRequest"
+        asp-route-shipmentRequestId="@Model.Id">
+            @T("Plugins.Shipping.Core.CancelShipmentRequest")
+        </a>
+
+        <a class="btn btn-primary" asp-controller="OrderShipping" asp-action="GetShipmentStatus"
+        asp-route-shipmentRequestId="@Model.Id">
+            @T("Plugins.Shipping.Core.GetShipmentStatus")
+        </a>
+    }
+
+</div>

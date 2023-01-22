@@ -1,0 +1,32 @@
+@model GalleryModel
+@{    
+    //page title
+    ViewBag.PageTitle = T("Admin.ContentManagement.Galleries.AddNew").Text;
+    //active menu item (system name)
+    Html.SetActiveMenuItemSystemName("Galleries");
+}
+
+<form asp-controller="Gallery" asp-action="GalleryCreate" method="post">
+    <div class="content-header clearfix">
+        <h1 class="float-left">
+            @T("Admin.ContentManagement.Galleries.AddNew")
+            <small>
+                <i class="fas fa-arrow-circle-left"></i>
+                <a asp-action="Galleries">@T("Admin.ContentManagement.Galleries.BackToList")</a>
+            </small>
+        </h1>
+        <div class="float-right">
+            <button type="submit" name="save" class="btn btn-primary">
+                <i class="far fa-save"></i>
+                @T("Admin.Common.Save")
+            </button>
+            <button type="submit" name="save-continue" class="btn btn-primary">
+                <i class="far fa-save"></i>
+                @T("Admin.Common.SaveContinue")
+            </button>
+            @await Component.InvokeAsync("AdminWidget", new { widgetZone = AdminWidgetZonesExtension.GalleryDetailsButtons })
+        </div>
+    </div>
+    @await Html.PartialAsync("_CreateOrUpdate", Model)
+</form>
+

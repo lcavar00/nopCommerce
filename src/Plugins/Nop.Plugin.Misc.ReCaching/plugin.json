@@ -1,0 +1,11 @@
+﻿{
+  "Group": "Misc",
+  "FriendlyName": "ReCaching products plugin",
+  "SystemName": "Misc.ReCaching",
+  "Version": "1.0",
+  "SupportedVersions": [ "4.60" ],
+  "Author": "lukacavar@gmail.com",
+  "DisplayOrder": 1,
+  "FileName": "Nop.Plugin.Misc.ReCaching.dll",
+  "Description": "This plugin allows recaching products via a schedule task"
+}

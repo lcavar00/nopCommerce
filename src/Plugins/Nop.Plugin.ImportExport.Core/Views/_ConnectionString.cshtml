@@ -1,0 +1,61 @@
+@model Nop.Plugin.ImportExport.Core.Models.DbConnectionModel
+@using Nop.Web.Infrastructure.Installation
+@inject IInstallationLocalizationService ILS
+
+<div id="sqlDatabaseInfo">
+    <div class="credentials">
+        <div class="form-group row">
+            <label class="col-sm-3 col-form-label text-right font-weight-bold">
+                @ILS.GetResource("ServerName")
+            </label>
+            <div class="col-sm-8">
+                <input asp-for="ServerName" class="form-control" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-3 col-form-label text-right font-weight-bold">
+                @ILS.GetResource("DatabaseName")
+            </label>
+            <div class="col-sm-8">
+                <input asp-for="DatabaseName" class="form-control" />
+            </div>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label class="col-sm-3 col-form-label text-right font-weight-bold">
+            Authentification
+        </label>
+        <div class="col-sm-8">
+            <div class="radio">
+                <label class="col-sm-3 col-form-label text-right font-weight-bold">
+                    <input asp-for="SqlAuthenticationType" value="sqlauthentication" type="radio" checked="@(Model.SqlAuthenticationType == "sqlauthentication")" id="sqlauthenticationtype_sql" />
+                    @ILS.GetResource("SqlAuthentication")
+                </label>
+            </div>
+            <div class="radio">
+                <label class="col-sm-4 col-form-label text-right font-weight-bold">
+                    <input asp-for="SqlAuthenticationType" value="windowsauthentication" type="radio" checked="@(Model.SqlAuthenticationType == "windowsauthentication")" id="sqlauthenticationtype_windows" />
+                    @ILS.GetResource("WindowsAuthentication")
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="credentials" id="pnlSqlServerCredentials">
+        <div class="form-group row">
+            <label class="col-sm-3 col-form-label text-right font-weight-bold">
+                @ILS.GetResource("SqlUsername")
+            </label>
+            <div class="col-sm-8">
+                <input asp-for="Username" class="form-control" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-3 col-form-label text-right font-weight-bold">
+                @ILS.GetResource("SqlPassword")
+            </label>
+            <div class="col-sm-8">
+                <input asp-for="Password" class="form-control" />
+            </div>
+        </div>
+    </div>
+</div>

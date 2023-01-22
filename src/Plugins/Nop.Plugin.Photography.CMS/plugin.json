@@ -1,0 +1,11 @@
+﻿{
+  "Group": "Content management plugin",
+  "FriendlyName": "Photography content management plugin",
+  "SystemName": "ExternalAuth.Facebook",
+  "Version": "1.0",
+  "SupportedVersions": [ "4.40" ],
+  "Author": "Luka Ćavar",
+  "DisplayOrder": 0,
+  "FileName": "Nop.Plugin.Photography.CMS.dll",
+  "Description": "This plugin enables having a photography content management system as well as a webshop."
+}

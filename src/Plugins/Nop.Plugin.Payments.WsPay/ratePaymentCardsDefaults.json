@@ -1,0 +1,76 @@
+﻿{
+  // NOTE: Credit card names should be following WsPAy CreditCardName field naming convention and case
+  "CardDefaults": [
+    //{
+    //  //minimal amount for which the card provider provides rate payment
+    //  "MinimalAmount": 1000000,
+    //  //Card list
+    //  "Cards": [
+    //    {
+    //      //Bank card provider list
+    //      "Name": "Card name",
+    //      "Banks": [
+    //        {
+    //          "Name": "Bank name",
+    //          "MaxRateNumber": 2
+    //        }
+    //      ]
+    //    }
+    //  ]
+    //},
+    {
+      "MinimalAmount": 1,
+      "Cards": [
+        {
+          "Name": "VISA PREMIUM",
+          "Banks": [
+            {
+              "Name": "Pbz Card",
+              "MaxRateNumber": 24
+            }
+          ]
+        },
+        {
+          "Name": "Diners",
+          "Banks": [
+            {
+              "Name": "ERSTE",
+              "MaxRateNumber": 12
+            }
+          ]
+        },
+        {
+          "Name": "MasterCard",
+          "Banks": [
+            {
+              "Name": "Zagrebačka banka",
+              "MaxRateNumber": 12
+            },
+            {
+              "Name": "OTP",
+              "MaxRateNumber": 10
+            }
+          ]
+        },
+        {
+          "Name": "VISA",
+          "Banks": [
+            {
+              "Name": "Pbz Card",
+              "MaxRateNumber": 12
+            }
+          ]
+        },
+        {
+          "Name": "Maestro",
+          "Banks": [
+            {
+              "Name": "Pbz Card",
+              "MaxRateNumber": 12
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
